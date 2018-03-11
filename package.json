@@ -1,46 +1,63 @@
 {
-    "name": "lombok-support",
-    "displayName": "Lombok Support",
-    "description": "Lombok Annotations Support for Visual Studio Code",
-    "version": "0.0.1",
-    "publisher": "GabrielBB",
-    "engines": {
-        "vscode": "^1.21.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "workspaceContains:**/*.java"
-    ],
-    "main": "./out/extension",
-    "contributes": {
-        "languages": [
-            {
-                "id": "java",
-                "extensions": [
-                    ".java",
-                    ".jav"
-                ],
-                "aliases": [
-                    "Java",
-                    "java"
-                ]
-            }
+  "name": "lombok-support",
+  "displayName": "Lombok Support",
+  "description": "Lombok Annotations Support for Visual Studio Code",
+  "version": "0.8.0",
+  "publisher": "GabrielBB",
+  "icon": "/images/icon.png",
+  "engines": {
+    "vscode": "^1.21.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GabrielBB/vscode-lombok.git"
+  },
+  "keywords": [
+    "lombok",
+    "vs-code"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "lombokConfig": {
+    "path": "\\server\\lombok.jar",
+    "vmArgsKey": "java.jdt.ls.vmargs",
+    "vmArgsValue": "-javaagent:\"{lombok-jar}\" -Xbootclasspath/a:\"{lombok-jar}\""
+  },
+  "main": "./out/index",
+  "activationEvents": [
+    "onLanguage:java",
+    "workspaceContains:pom.xml",
+    "workspaceContains:build.gradle"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "java",
+        "extensions": [
+          ".java",
+          ".jav"
+        ],
+        "aliases": [
+          "Java",
+          "java"
         ]
-    },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "tslint": "^5.8.0",
-        "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
-    }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "npm run compile && node ./node_modules/vscode/bin/test",
+    "vscode:uninstall": "node ./out/uninstall"
+  },
+  "devDependencies": {
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.13",
+    "tslint": "^5.8.0",
+    "@types/node": "^7.0.43",
+    "@types/mocha": "^2.2.42"
+  }
 }

@@ -1,38 +1,48 @@
-'use strict';
+import * as vscode from "vscode";
+import { Extension, ConfigurationTarget } from "vscode";
 
-import * as vscode from 'vscode';
-const pjson = require('../package.json');
+const { publisher, name, displayName } = require('../package.json');
 
-const extensionId = pjson.publisher + '.' + pjson.name;
-
-const extension: vscode.Extension<any> | undefined = vscode.extensions.getExtension(extensionId);
-
-if (extension === undefined) {
-    throw new Error('Visual Studio Code could not find an extension with id: ' + extensionId);
+function getSetting(key: string): string | undefined {
+    return vscode.workspace.getConfiguration().get(key);
 }
 
-const vmargsKey = 'java.jdt.ls.vmargs';
+export function getExtension(): Extension<any> {
+    const extensionId = publisher + '.' + name;
 
-const lombokJar = extension.extensionPath + '\\server\\lombok.jar';
+    const extension: Extension<any> | undefined = vscode.extensions.getExtension(extensionId);
 
-const lombokValue = '-javaagent:"' + lombokJar + '" -Xbootclasspath/a:"' + lombokJar + '"';
-
-export function activate(context: vscode.ExtensionContext) {
-
-    const config = vscode.workspace.getConfiguration();
-
-    const vmArgsValue: string | undefined = config.get(vmargsKey);
-
-    if (!vmArgsValue) {
-        config.update(vmargsKey, lombokValue);
-    } else {
-        if (vmArgsValue.indexOf(lombokValue) === -1) {
-            config.update(vmargsKey, vmArgsValue + ' ' + lombokValue);
-        }
-
+    if (extension === undefined) {
+        throw new Error('Visual Studio Code could not find ' + displayName +
+            ' with id: ' + extensionId + ' in .vscode/extensions folder');
     }
+
+    return extension;
 }
 
+export function setLombokToVSCode(lombokConfig: any): boolean {
 
-export function deactivate(context: vscode.ExtensionContext) {
+    const previousVmArguments = getSetting(lombokConfig.vmArgsKey);
+
+    if (!previousVmArguments) {
+        return updateVMSettings(lombokConfig.vmArgsKey, lombokConfig.vmArgsValue);
+    } else if (previousVmArguments.indexOf(lombokConfig.path) === -1) {
+        return updateVMSettings(lombokConfig.vmArgsKey, previousVmArguments.trim() + ' ' + lombokConfig.vmArgsValue);
+    }
+
+    return true;
+}
+
+export function cleanLombok(lombokConfig: any): boolean {
+    const actualVmArguments = getSetting(lombokConfig.vmArgsKey);
+
+    return actualVmArguments !== undefined && updateVMSettings(lombokConfig.vmArgsKey, actualVmArguments.replace(lombokConfig.vmArgsValue, ''));
+}
+
+function updateVMSettings(key: string, value: string): boolean {
+    vscode.workspace.getConfiguration().update(key, value, ConfigurationTarget.Global);
+
+    const newVmArguments = getSetting(key);
+
+    return newVmArguments !== undefined && newVmArguments.indexOf(value) > -1;
 }
