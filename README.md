@@ -14,7 +14,7 @@ A lightweight extension to support [Lombok](https://projectlombok.org/) annotati
 
 ## Install
 
-Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombok-support` and click install. Reload VS Code when asked. It will notice you that Lombok Support has been activated every time you open a Java Project.
+Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombok` and click install. Reload VS Code when asked. It will notice you that Lombok Support has been activated every time you open a Java Project.
 
 ## Features / Supports
 
