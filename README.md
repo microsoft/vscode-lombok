@@ -4,6 +4,8 @@
 
 ## Overview
 
+https://marketplace.visualstudio.com/items?itemName=GabrielBB.vscode-lombok
+
 A lightweight extension to support [Lombok](https://projectlombok.org/) annotations processing in Visual Studio Code
 
 ![Screenshot](images/vscode-lombok.gif)
@@ -14,7 +16,7 @@ A lightweight extension to support [Lombok](https://projectlombok.org/) annotati
 
 ## Install
 
-Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombok-support` and click install. Reload VS Code when asked. It will notice you that Lombok Support has been activated every time you open a Java Project.
+Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombok` and click install. Reload VS Code when asked. It will notice you that Lombok Support has been activated every time you open a Java Project.
 
 ## Features / Supports
 
@@ -34,4 +36,4 @@ Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombo
 - [@val](https://projectlombok.org/features/val.html)
 - [@UtilityClass](https://projectlombok.org/features/experimental/UtilityClass.html)
 
-[I'm having issues](https://github.com/Microsoft/vscode-lombok-support/issues)
+[I'm having issues](https://github.com/Microsoft/vscode-lombok/issues)
