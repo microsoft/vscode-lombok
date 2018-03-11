@@ -4,7 +4,7 @@
   "description": "A lightweight extension to support Lombok annotations processing in Visual Studio Code",
   "version": "0.8.0",
   "publisher": "GabrielBB",
-  "icon": "images/icon.png",
+  "icon": "https://raw.githubusercontent.com/GabrielBB/vscode-lombok/master/images/icon.png",
   "engines": {
     "vscode": "^1.21.0"
   },

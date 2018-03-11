@@ -1,4 +1,4 @@
-# ![Lombok Logo](images/icon.png) Lombok Support
+# <img src="https://raw.githubusercontent.com/GabrielBB/vscode-lombok/master/images/icon.png" alt="Lombok logo" width="48" height="48">   vscode-lombok
 [![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/vscode-lombok.svg)](https://marketplace.visualstudio.com/items?itemName=vscode-lombok)
 [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vscode-lombok.svg)]
 (https://marketplace.visualstudio.com/items?itemName=vscode-lombok)
