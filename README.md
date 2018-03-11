@@ -4,6 +4,8 @@
 
 ## Overview
 
+https://marketplace.visualstudio.com/items?itemName=GabrielBB.vscode-lombok
+
 A lightweight extension to support [Lombok](https://projectlombok.org/) annotations processing in Visual Studio Code
 
 ![Screenshot](images/vscode-lombok.gif)
