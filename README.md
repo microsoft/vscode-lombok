@@ -1,13 +1,13 @@
-# Lombok Support
-[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/vscode-lombok-support.svg)](https://marketplace.visualstudio.com/items?itemName=vscode-lombok-support)
-[![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vscode-lombok-support.svg)]
-(https://marketplace.visualstudio.com/items?itemName=vscode-lombok-support)
+# ![Lombok Logo](images/icon.png) Lombok Support
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/vscode-lombok.svg)](https://marketplace.visualstudio.com/items?itemName=vscode-lombok)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vscode-lombok.svg)]
+(https://marketplace.visualstudio.com/items?itemName=vscode-lombok)
 
 ## Overview
 
-![Screenshot](images/vscode-lombok-support.gif) 
+A lightweight extension to support [Lombok](https://projectlombok.org/) annotations processing in Visual Studio Code
 
-A lightweight extension to support Lombok Annotations on Visual Studio Code
+![Screenshot](images/vscode-lombok.gif)
 
 ## Requirements
 - VS Code (version 1.21.0 or later)
@@ -15,10 +15,24 @@ A lightweight extension to support Lombok Annotations on Visual Studio Code
 
 ## Install
 
-Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombok-support` and click install. It will ask you to reload VS Code.
+Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombok-support` and click install. Reload VS Code when asked. It will notice you that Lombok Support has been activated every time you open a Java Project.
 
-## Use
+## Features / Supports
 
-VS Code will notice you that Lombok Support has been activated every time you open a Java Project. For more information on how to use lombok, please visit the oficial page: [Project Lombok](https://projectlombok.org/)
+- [@Getter and @Setter](http://projectlombok.org/features/GetterSetter.html)
+- [@ToString](http://projectlombok.org/features/ToString.html)
+- [@EqualsAndHashCode](http://projectlombok.org/features/EqualsAndHashCode.html)
+- [@AllArgsConstructor, @RequiredArgsConstructor and @NoArgsConstructor](http://projectlombok.org/features/Constructor.html)
+- [@Log](http://projectlombok.org/features/Log.html)
+- [@Data](https://projectlombok.org/features/Data.html)
+- [@Builder](https://projectlombok.org/features/Builder.html)
+- [@Singular](https://projectlombok.org/features/Builder.html#singular)
+- [@Delegate](https://projectlombok.org/features/Delegate.html)
+- [@Value](https://projectlombok.org/features/Value.html)
+- [@Accessors](https://projectlombok.org/features/experimental/Accessors.html)
+- [@Wither](https://projectlombok.org/features/experimental/Wither.html)
+- [@SneakyThrows](https://projectlombok.org/features/SneakyThrows.html)
+- [@val](https://projectlombok.org/features/val.html)
+- [@UtilityClass](https://projectlombok.org/features/experimental/UtilityClass.html)
 
 [I'm having issues](https://github.com/Microsoft/vscode-lombok-support/issues)
