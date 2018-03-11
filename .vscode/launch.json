@@ -8,7 +8,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Extension Uninstall",
             "program": "${workspaceFolder}/out/uninstall.js"
         },
         {
