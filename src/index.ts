@@ -1,6 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
-import { setLombokToVSCode, cleanLombok } from './extension';
+import { setLombokToVSCode } from './extension';
 import lombokConfig from './lombok-config';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -11,5 +11,5 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate(context: vscode.ExtensionContext) {
-    cleanLombok(lombokConfig);
+    //return cleanLombok(lombokConfig);
 }
