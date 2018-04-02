@@ -20,7 +20,7 @@ export function getExtension(): Extension<any> {
     return extension;
 }
 
-export function setLombokToVSCode(lombokConfig: any): boolean {
+export async function setLombokToVSCode(lombokConfig: any): Promise<boolean> {
 
     const previousVmArguments = getSetting(lombokConfig.vmArgsKey);
 
@@ -33,16 +33,16 @@ export function setLombokToVSCode(lombokConfig: any): boolean {
     return true;
 }
 
-export function cleanLombok(lombokConfig: any): boolean {
+export async function cleanLombok(lombokConfig: any): Promise<boolean> {
     const actualVmArguments = getSetting(lombokConfig.vmArgsKey);
 
     return actualVmArguments !== undefined && updateVMSettings(lombokConfig.vmArgsKey, actualVmArguments.replace(lombokConfig.vmArgsValue, ''));
 }
 
-function updateVMSettings(key: string, value: string): boolean {
-    vscode.workspace.getConfiguration().update(key, value, ConfigurationTarget.Global);
+async function updateVMSettings(key: string, value: string): Promise<boolean> {
+    await vscode.workspace.getConfiguration().update(key, value, ConfigurationTarget.Global);
 
     const newVmArguments = getSetting(key);
 
-    return newVmArguments !== undefined && newVmArguments.indexOf(value) > -1;
+    return newVmArguments !== undefined && newVmArguments === value;
 }
