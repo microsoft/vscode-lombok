@@ -1,39 +1,27 @@
 import * as vscode from "vscode";
-import { Extension, ConfigurationTarget } from "vscode";
-
-const { publisher, name, displayName } = require('../package.json');
+import { ConfigurationTarget } from "vscode";
+import lombokConfig from './lombok-config';
 
 function getSetting(key: string): string | undefined {
     return vscode.workspace.getConfiguration().get(key);
 }
 
-export function getExtension(): Extension<any> {
-    const extensionId = publisher + '.' + name;
-
-    const extension: Extension<any> | undefined = vscode.extensions.getExtension(extensionId);
-
-    if (extension === undefined) {
-        throw new Error('Visual Studio Code could not find ' + displayName +
-            ' with id: ' + extensionId + ' in .vscode/extensions folder');
-    }
-
-    return extension;
-}
-
-export async function setLombokToVSCode(lombokConfig: any): Promise<boolean> {
+export async function setLombokToVSCode(): Promise<boolean> {
 
     const previousVmArguments = getSetting(lombokConfig.vmArgsKey);
 
     if (!previousVmArguments) {
         return updateVMSettings(lombokConfig.vmArgsKey, lombokConfig.vmArgsValue);
-    } else if (previousVmArguments.indexOf(lombokConfig.path) === -1) {
+    } else if (!previousVmArguments.includes(lombokConfig.path)) {
         return updateVMSettings(lombokConfig.vmArgsKey, previousVmArguments.trim() + ' ' + lombokConfig.vmArgsValue);
+    } else if (!previousVmArguments.includes(lombokConfig.vmArgsValue)) {
+        return updateVMSettings(lombokConfig.vmArgsKey, previousVmArguments.split('-javaagent:')[0].trim() + ' ' + lombokConfig.vmArgsValue);
     }
 
     return true;
 }
 
-export async function cleanLombok(lombokConfig: any): Promise<boolean> {
+export async function cleanLombok(): Promise<boolean> {
     const actualVmArguments = getSetting(lombokConfig.vmArgsKey);
 
     return actualVmArguments !== undefined && updateVMSettings(lombokConfig.vmArgsKey, actualVmArguments.replace(lombokConfig.vmArgsValue, ''));
