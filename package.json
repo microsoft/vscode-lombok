@@ -5,6 +5,7 @@
     "version": "0.9.5",
     "publisher": "GabrielBB",
     "icon": "images/icon.png",
+    "license":"MIT",
     "engines": {
         "vscode": "^1.21.0"
     },
