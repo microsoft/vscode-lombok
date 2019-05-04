@@ -25,6 +25,7 @@ Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombo
 - [@EqualsAndHashCode](http://projectlombok.org/features/EqualsAndHashCode.html)
 - [@AllArgsConstructor, @RequiredArgsConstructor and @NoArgsConstructor](http://projectlombok.org/features/Constructor.html)
 - [@Log](http://projectlombok.org/features/Log.html)
+- [@Slf4j](https://projectlombok.org/features/log)
 - [@Data](https://projectlombok.org/features/Data.html)
 - [@Builder](https://projectlombok.org/features/Builder.html)
 - [@Singular](https://projectlombok.org/features/Builder.html#singular)
