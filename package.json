@@ -23,7 +23,7 @@
     "lombokConfig": {
         "path": "/server/lombok.jar",
         "vmArgsKey": "java.jdt.ls.vmargs",
-        "vmArgsValue": "-javaagent:\"{lombok-jar}\" -Xbootclasspath/a:\"{lombok-jar}\""
+        "vmArgsValue": "-javaagent:\"{lombok-jar}\""
     },
     "main": "./out/index",
     "activationEvents": [
