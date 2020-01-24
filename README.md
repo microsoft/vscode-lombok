@@ -12,7 +12,7 @@ A lightweight extension to support [Lombok](https://projectlombok.org/) annotati
 
 ## Requirements
 - VS Code (version 1.21.0 or later)
-- Lombok added as a dependency in your Java Project. [Add with Maven](https://projectlombok.org/setup/maven) or  [Add with Gradle](https://projectlombok.org/setup/gradle)
+- Lombok added as a dependency in your Java Project (Make sure you're using the latest version to avoid issues!) [Add with Maven](https://projectlombok.org/setup/maven) or  [Add with Gradle](https://projectlombok.org/setup/gradle)
 
 ## Install
 
