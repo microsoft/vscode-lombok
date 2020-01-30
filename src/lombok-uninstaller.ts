@@ -1,8 +1,8 @@
-import { readFileSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 
 const VM_ARGS_KEY = "java.jdt.ls.vmargs";
 
-export function getUserSettingsPath(platform : string): string {
+export function getUserSettingsPath(platform: string): string {
     const map: any = {
         win32: process.env.APPDATA + '\\Code\\User\\settings.json',
         darwin: process.env.HOME + '/Library/Application Support/Code/User/settings.json',
@@ -13,7 +13,8 @@ export function getUserSettingsPath(platform : string): string {
 
 export function uninstall(): void {
     const userSettingsPath: string = getUserSettingsPath(process.platform);
-    if (userSettingsPath) {
+    
+    if (userSettingsPath && existsSync(userSettingsPath)) {
         const settings = JSON.parse(readFileSync(userSettingsPath, 'utf8'));
         const vmArgs: string = settings[VM_ARGS_KEY];
 
