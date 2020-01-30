@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as vscode from "vscode";
 import { install } from '../lombok-installer';
 import { getJarPath } from '../util';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { uninstall, getUserSettingsPath } from '../lombok-uninstaller';
 
 suite("Extension Tests", function () {
@@ -23,15 +23,18 @@ suite("Extension Tests", function () {
         }
     });
 
-    test("that Lombok -javaagent is removed from the VM arguments", async function () {
-        uninstall();
+    const userSettingsPath = getUserSettingsPath(process.platform);
 
-        const settings = JSON.parse(readFileSync(getUserSettingsPath(process.platform), 'utf8'));
-        const vmArgs: string = settings["java.jdt.ls.vmargs"];
+    if (userSettingsPath && existsSync(userSettingsPath)) {
+        test("that Lombok -javaagent is removed from the VM arguments", async function () {
+            uninstall();
 
-        if (vmArgs) {
-            assert.equal(vmArgs.includes(javaAgentArg), false);
-            assert.equal(vmArgs.match(/-javaagent:".*"/), null);
-        }
-    });
+            const settings = JSON.parse(readFileSync(userSettingsPath, 'utf8'));
+            const vmArgs: string = settings["java.jdt.ls.vmargs"];
+
+            if (vmArgs) {
+                assert.equal(vmArgs.match(/-javaagent:".*"/), null);
+            }
+        });
+    }
 });
