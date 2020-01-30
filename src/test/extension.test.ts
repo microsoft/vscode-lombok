@@ -1,21 +1,37 @@
-//
-// Note: This example test is leveraging the Mocha test framework.
-// Please refer to their documentation on https://mochajs.org/ for help.
-//
-
-// The module 'assert' provides assertion methods from node
 import * as assert from 'assert';
-import { setLombokToVSCode, cleanLombok } from '../extension';
+import * as vscode from "vscode";
+import { install } from '../lombok-installer';
+import { getJarPath } from '../util';
+import { readFileSync } from 'fs';
+import { uninstall, getUserSettingsPath } from '../lombok-uninstaller';
 
-// Defines a Mocha test suite to group tests of similar kind together
 suite("Extension Tests", function () {
 
-    // Defines a Mocha unit test
-    test("Test that Lombok Jar is sucessfully added to VM Settings", async function() {
-        assert.equal(true, await setLombokToVSCode());
+    uninstall();
+
+    const javaAgentArg = `-javaagent:"${getJarPath()}"`;
+
+    test("that Lombok -javaagent is appended to the VM arguments", async function () {
+        await install();
+
+        const vmArgs: string | undefined = vscode.workspace.getConfiguration().get("java.jdt.ls.vmargs");
+
+        if (vmArgs) {
+            assert.equal(vmArgs.includes(javaAgentArg), true);
+        } else {
+            assert.fail();
+        }
     });
 
-    test("Test that Lombok Jar is sucessfully removed from VM Settings", async function() {
-        assert.equal(true, await cleanLombok());
+    test("that Lombok -javaagent is removed from the VM arguments", async function () {
+        uninstall();
+
+        const settings = JSON.parse(readFileSync(getUserSettingsPath(process.platform), 'utf8'));
+        const vmArgs: string = settings["java.jdt.ls.vmargs"];
+
+        if (vmArgs) {
+            assert.equal(vmArgs.includes(javaAgentArg), false);
+            assert.equal(vmArgs.match(/-javaagent:".*"/), null);
+        }
     });
 });

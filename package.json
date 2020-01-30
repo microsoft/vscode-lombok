@@ -20,11 +20,6 @@
     "categories": [
         "Other"
     ],
-    "lombokConfig": {
-        "path": "/server/lombok.jar",
-        "vmArgsKey": "java.jdt.ls.vmargs",
-        "vmArgsValue": "-javaagent:\"{lombok-jar}\""
-    },
     "main": "./out/index",
     "activationEvents": [
         "onLanguage:java",
@@ -53,13 +48,13 @@
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "vscode:uninstall": "node ./out/uninstall"
+        "vscode:uninstall": "node ./out/uninstall-hook"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.42",
+        "@types/mocha": "^7.0.1",
         "@types/node": "^7.0.43",
-        "tslint": "^5.8.0",
-        "typescript": "^2.6.1",
+        "tslint": "^6.0.0",
+        "typescript": "^3.7.5",
         "vscode": "^1.1.36"
     }
 }
