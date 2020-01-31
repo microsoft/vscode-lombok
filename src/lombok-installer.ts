@@ -16,6 +16,7 @@ function getExtensionInstance(): Extension<any> {
 
 async function updateVmArgs(value: string) {
     await getWorkspaceConfig().update(VM_ARGS_KEY, value, ConfigurationTarget.Global);
+    vscode.window.showInformationMessage("If you have any trouble using Lombok, please, make sure your project is using the latest version");
 }
 
 function getWorkspaceConfig(): WorkspaceConfiguration {
