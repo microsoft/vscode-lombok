@@ -1,8 +1,18 @@
 import * as vscode from "vscode";
-import { ConfigurationTarget, WorkspaceConfiguration } from "vscode";
-import { getJarPath } from './util';
+import { ConfigurationTarget, WorkspaceConfiguration, Extension } from "vscode";
+import * as path from 'path';
+import { VM_ARGS_KEY } from "./util";
 
-const VM_ARGS_KEY = "java.jdt.ls.vmargs";
+const { publisher, name } = require('../package.json');
+
+function getExtensionInstance(): Extension<any> {
+    const extensionId = publisher + '.' + name;
+    const instance = vscode.extensions.getExtension(extensionId);
+    if (!instance) {
+        throw new Error("Could not get extension instance with id " + extensionId);
+    }
+    return instance;
+}
 
 async function updateVmArgs(value: string) {
     await getWorkspaceConfig().update(VM_ARGS_KEY, value, ConfigurationTarget.Global);
@@ -11,6 +21,8 @@ async function updateVmArgs(value: string) {
 function getWorkspaceConfig(): WorkspaceConfiguration {
     return vscode.workspace.getConfiguration();
 }
+
+export const getJarPath = () => path.join(getExtensionInstance().extensionPath, "server", "lombok.jar");
 
 export async function install(): Promise<void> {
 

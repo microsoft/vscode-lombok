@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 import * as vscode from "vscode";
-import { install } from '../lombok-installer';
-import { getJarPath } from '../util';
+import { install, getJarPath } from '../../lombok-installer';
 import { readFileSync, existsSync } from 'fs';
-import { uninstall, getUserSettingsPath } from '../lombok-uninstaller';
+import { uninstall } from '../../lombok-uninstaller';
+import { VM_ARGS_KEY, getUserSettingsPath } from '../../util';
 
 suite("Extension Tests", function () {
 
@@ -14,7 +14,7 @@ suite("Extension Tests", function () {
     test("that Lombok -javaagent is appended to the VM arguments", async function () {
         await install();
 
-        const vmArgs: string | undefined = vscode.workspace.getConfiguration().get("java.jdt.ls.vmargs");
+        const vmArgs: string | undefined = vscode.workspace.getConfiguration().get(VM_ARGS_KEY);
 
         if (vmArgs) {
             assert.equal(vmArgs.includes(javaAgentArg), true);
@@ -25,12 +25,12 @@ suite("Extension Tests", function () {
 
     const userSettingsPath = getUserSettingsPath(process.platform);
 
-    if (userSettingsPath && existsSync(userSettingsPath)) {
+    if (existsSync(userSettingsPath)) {
         test("that Lombok -javaagent is removed from the VM arguments", async function () {
             uninstall();
 
             const settings = JSON.parse(readFileSync(userSettingsPath, 'utf8'));
-            const vmArgs: string = settings["java.jdt.ls.vmargs"];
+            const vmArgs: string = settings[VM_ARGS_KEY];
 
             if (vmArgs) {
                 assert.equal(vmArgs.match(/-javaagent:".*"/), null);

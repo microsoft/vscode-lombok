@@ -1,15 +1,10 @@
-import * as vscode from "vscode";
-import { Extension } from "vscode";
+export const VM_ARGS_KEY = "java.jdt.ls.vmargs";
 
-const { publisher, name } = require('../package.json');
-
-function getExtensionInstance(): Extension<any> {
-    const extensionId = publisher + '.' + name;
-    const instance = vscode.extensions.getExtension(extensionId);
-    if (!instance) {
-        throw new Error("Could not get extension instance with id " + extensionId);
-    }
-    return instance;
+export function getUserSettingsPath(platform: string): string {
+    const map: any = {
+        win32: process.env.APPDATA + '\\Code\\User\\settings.json',
+        darwin: process.env.HOME + '/Library/Application Support/Code/User/settings.json',
+        linux: process.env.HOME + '/.config/Code/User/settings.json'
+    };
+    return map[platform];
 }
-
-export const getJarPath = () => getExtensionInstance().extensionPath + "/server/lombok.jar";
