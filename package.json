@@ -42,8 +42,7 @@
         ]
     },
     "scripts": {
-        "rimraf": "./node_modules/rimraf/bin.js",
-        "clean": "rimraf out/",
+        "clean": "node ./node_modules/rimraf/bin.js out/",
         "compile": "npm run clean && tsc -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
         "watch": "tsc -watch -p ./",
