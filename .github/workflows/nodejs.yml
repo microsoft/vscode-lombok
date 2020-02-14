@@ -15,4 +15,4 @@ jobs:
           node-version: 8.x
       - run: npm install
       - name: run tests
-      - run: xvfb-run -a npm test
+        run: xvfb-run -a npm test
