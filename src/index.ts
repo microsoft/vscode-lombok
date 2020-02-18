@@ -1,12 +1,12 @@
 'use strict';
 import * as vscode from 'vscode';
-import { setLombokToVSCode } from './extension';
+import { install } from './lombok-installer';
 
 
-export async function activate(context: vscode.ExtensionContext) {
-    await setLombokToVSCode();
+export function activate(context: vscode.ExtensionContext) {
+    install();
 }
 
 export function deactivate(context: vscode.ExtensionContext) {
-    // await cleanLombok();
+    // VSCode doesn't support settings removing during deactivation (issue #45474)
 }

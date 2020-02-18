@@ -2,9 +2,10 @@
     "name": "vscode-lombok",
     "displayName": "Lombok Annotations Support for VS Code",
     "description": "A lightweight extension to support Lombok annotations processing in Visual Studio Code",
-    "version": "0.9.5",
+    "version": "1.0.0",
     "publisher": "GabrielBB",
     "icon": "images/icon.png",
+    "license": "MIT",
     "engines": {
         "vscode": "^1.21.0"
     },
@@ -19,11 +20,6 @@
     "categories": [
         "Other"
     ],
-    "lombokConfig": {
-        "path": "/server/lombok.jar",
-        "vmArgsKey": "java.jdt.ls.vmargs",
-        "vmArgsValue": "-javaagent:\"{lombok-jar}\" -Xbootclasspath/a:\"{lombok-jar}\""
-    },
     "main": "./out/index",
     "activationEvents": [
         "onLanguage:java",
@@ -46,19 +42,28 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "package": "vsce package",
+        "clean": "node ./node_modules/rimraf/bin.js out/",
+        "compile": "npm run clean && tsc -p ./",
+        "test": "npm run compile && node ./out/test/runTest.js",
         "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "vscode:uninstall": "node ./out/uninstall"
+        "package": "vsce package",
+        "vscode:prepublish": "npm run compile",
+        "vscode:uninstall": "node ./out/uninstall-hook"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.42",
+        "@types/jsonic": "^0.3.0",
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.6",
         "@types/node": "^7.0.43",
-        "tslint": "^5.8.0",
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.18"
+        "tslint": "^6.0.0",
+        "typescript": "^3.7.5",
+        "vscode-test": "^1.3.0",
+        "@types/vscode": "1.21.0",
+        "glob": "^7.1.6",
+        "mocha": "^6.1.4",
+        "rimraf": "^3.0.1"
+    },
+    "dependencies": {
+        "jsonic": "^0.3.1"
     }
 }
