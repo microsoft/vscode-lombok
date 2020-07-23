@@ -7,17 +7,18 @@
     "icon": "images/icon.png",
     "license": "MIT",
     "engines": {
-        "vscode": "^1.21.0"
+        "vscode": "^1.42.0"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/GabrielBB/vscode-lombok.git"
     },
     "keywords": [
-        "lombok",
-        "vs-code"
+        "java",
+        "lombok"
     ],
     "categories": [
+        "Programming Languages",
         "Other"
     ],
     "main": "./out/index",
@@ -27,18 +28,8 @@
         "workspaceContains:build.gradle"
     ],
     "contributes": {
-        "languages": [
-            {
-                "id": "java",
-                "extensions": [
-                    ".java",
-                    ".jav"
-                ],
-                "aliases": [
-                    "Java",
-                    "java"
-                ]
-            }
+        "javaExtensions": [
+            "./server/lombok-bundle.jar"
         ]
     },
     "scripts": {
@@ -47,8 +38,7 @@
         "test": "npm run compile && node ./out/test/runTest.js",
         "watch": "tsc -watch -p ./",
         "package": "vsce package",
-        "vscode:prepublish": "npm run compile",
-        "vscode:uninstall": "node ./out/uninstall-hook"
+        "vscode:prepublish": "npm run compile"
     },
     "devDependencies": {
         "@types/jsonic": "^0.3.0",
