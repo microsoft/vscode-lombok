@@ -37,23 +37,21 @@
         "compile": "npm run clean && tsc -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
         "watch": "tsc -watch -p ./",
-        "package": "vsce package",
+        "bundle": "jar cvfm ./server/lombok-bundle.jar ./server/MANIFEST.MF ./server/lombok.jar",
+        "package": "npm run bundle && vsce package",
         "vscode:prepublish": "npm run compile"
     },
     "devDependencies": {
-        "@types/jsonic": "^0.3.0",
         "@types/glob": "^7.1.1",
         "@types/mocha": "^5.2.6",
         "@types/node": "^7.0.43",
-        "tslint": "^6.0.0",
-        "typescript": "^3.7.5",
-        "vscode-test": "^1.3.0",
         "@types/vscode": "1.21.0",
         "glob": "^7.1.6",
         "mocha": "^6.1.4",
-        "rimraf": "^3.0.1"
+        "rimraf": "^3.0.1",
+        "tslint": "^6.0.0",
+        "typescript": "^3.7.5",
+        "vscode-test": "^1.3.0"
     },
-    "dependencies": {
-        "jsonic": "^0.3.1"
-    }
+    "dependencies": {}
 }
