@@ -8,5 +8,5 @@ tsconfig.json
 tslint.json
 **/**.vsix
 .github/**
-lombok.jar
-MANIFEST.MF
+server/lombok.jar
+server/MANIFEST.MF
