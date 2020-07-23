@@ -37,7 +37,7 @@
         "compile": "npm run clean && tsc -p ./",
         "test": "npm run compile && node ./out/test/runTest.js",
         "watch": "tsc -watch -p ./",
-        "bundle": "jar cvfm ./server/lombok-bundle.jar ./server/MANIFEST.MF ./server/lombok.jar",
+        "bundle": "jar cvfm ./server/lombok-bundle.jar MANIFEST.MF lombok.jar",
         "package": "npm run bundle && vsce package",
         "vscode:prepublish": "npm run compile"
     },
