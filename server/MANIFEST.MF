@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Created-By: Gabriel Basilio Brito
+Bundle-ManifestVersion: 1
+Bundle-Name: Lombok bundle
+Bundle-Description: Package lombok.jar in an OSGi bundle
+Bundle-Version: 1.0.0
+Bundle-ClassPath: .,lombok.jar
+Bundle-SymbolicName: lombok
+Export-Package: lombok.*
