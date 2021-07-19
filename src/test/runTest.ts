@@ -13,7 +13,7 @@ import { runTests, downloadAndUnzipVSCode, resolveCliPathFromVSCodeExecutablePat
         const extensionTestsPath = path.resolve(__dirname, './suite/index');
 
         // Download VS Code and unzip it
-        const vscodeExecutablePath = await downloadAndUnzipVSCode('1.41.1');
+        const vscodeExecutablePath = await downloadAndUnzipVSCode('1.58.2');
 
         const cliPath = resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
 
