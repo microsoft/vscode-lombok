@@ -2,8 +2,11 @@ import * as vscode from "vscode";
 import { ConfigurationTarget, WorkspaceConfiguration, Extension } from "vscode";
 import * as path from 'path';
 import { VM_ARGS_KEY } from "./util";
+import * as fs from "fs";
 
 const { publisher, name } = require('../package.json');
+const https = require('https');
+const logger = vscode.window.createOutputChannel(name);
 
 function getExtensionInstance(): Extension<any> {
     const extensionId = publisher + '.' + name;
@@ -23,7 +26,46 @@ function getWorkspaceConfig(): WorkspaceConfiguration {
     return vscode.workspace.getConfiguration();
 }
 
-export const getJarPath = () => path.join(getExtensionInstance().extensionPath, "server", "lombok.jar");
+function downloadLatestJar(to: string) {
+    logger.appendLine("Downloading latest lombok...");
+
+    var dir = path.dirname(to);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+    }
+
+    var file = fs.createWriteStream(to);
+    https.get("https://projectlombok.org/downloads/lombok.jar", function (response: any) {
+        logger.appendLine("Saving the downloaded lombok...");
+        
+        response.pipe(file);
+        file.on('finish', function() {
+            file.close();
+            logger.appendLine("Download completed");
+        }).on('error', function(err: any) {
+            logger.appendLine("Unable to download lombok. " + err.message);
+        });
+    });
+}
+
+export function getJarPath(): string {
+    const customJarPath = vscode.workspace.getConfiguration(name).get<string>("lombokPath")
+    const builtInJarPath = path.join(getExtensionInstance().extensionPath, "server", "lombok.jar");
+
+    if (customJarPath) {
+        return customJarPath;
+    }
+
+    if (!fs.existsSync(builtInJarPath)) {
+        logger.appendLine("Built-in jar does not exist. Will download the latest version.");
+        downloadLatestJar(builtInJarPath);
+    }
+    else {
+        logger.appendLine("Built-in jar already exists. Skip downloading");
+    }
+    
+    return builtInJarPath;
+}
 
 export async function install(): Promise<void> {
 

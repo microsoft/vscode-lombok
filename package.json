@@ -39,7 +39,16 @@
                     "java"
                 ]
             }
-        ]
+        ],
+        "configuration": {
+            "title": "vscode-lombok",
+            "properties": {
+                "vscode-lombok.lombokPath": {
+                    "description": "Specify the path to the lombok jar you want to use. If left blank, it will use the built-in lombok jar that comes bundled with this extension.",
+                    "type": "string"
+                }
+            }
+        }
     },
     "scripts": {
         "clean": "node ./node_modules/rimraf/bin.js out/",
