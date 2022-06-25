@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { ConfigurationTarget, WorkspaceConfiguration, Extension } from "vscode";
 import * as path from 'path';
-import { VM_ARGS_KEY } from "./util";
+import { VM_ARGS_KEY, LOMBOK_PATH_KEY } from "./util";
 import * as fs from "fs";
 
 const { publisher, name } = require('../package.json');
@@ -48,8 +48,8 @@ function downloadLatestJar(to: string) {
     });
 }
 
-export function getJarPath(): string {
-    const customJarPath = vscode.workspace.getConfiguration(name).get<string>("lombokPath")
+function getJarPath(): string {
+    const customJarPath = vscode.workspace.getConfiguration(name).get<string>(LOMBOK_PATH_KEY)?.trim();
     const builtInJarPath = path.join(getExtensionInstance().extensionPath, "server", "lombok.jar");
 
     if (customJarPath) {
