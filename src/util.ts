@@ -1,5 +1,5 @@
 export const VM_ARGS_KEY = "java.jdt.ls.vmargs";
-export const LOMBOK_PATH_KEY = "lombokPath";
+export const LOMBOK_PATH_KEY = "vscode-lombok.lombokPath";
 
 export function getUserSettingsPath(platform: string): string {
     const map: any = {

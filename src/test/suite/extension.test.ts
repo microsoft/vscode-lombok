@@ -15,12 +15,12 @@ suite("Extension Tests", function () {
         uninstall();
     });
 
-    this.afterEach(() => {
-        vscode.workspace.getConfiguration().update(VM_ARGS_KEY, originalVmArgs, true);
-        vscode.workspace.getConfiguration(name).update(LOMBOK_PATH_KEY, originalLombokPath, true);
+    this.afterEach(async () => {
+        await vscode.workspace.getConfiguration().update(VM_ARGS_KEY, originalVmArgs, true);
+        await vscode.workspace.getConfiguration().update(LOMBOK_PATH_KEY, originalLombokPath, true);
     })
 
-    suite("that Lombok -javaagent is appended to the VM arguments", function () {
+    suite("that Lombok -javaagent is appended to the VM arguments", () => {
         const builtInJarPath = vscode.extensions.getExtension(publisher + '.' + name)?.extensionPath?.replaceAll("\\", "/") + "/server/lombok.jar";
 
         const tests = [
@@ -31,8 +31,8 @@ suite("Extension Tests", function () {
         ];
         
         tests.forEach(({ lombokPath, expectedJarPath }) => {
-            test(`when lombokPath is ${lombokPath}`, async function () {
-                await vscode.workspace.getConfiguration(name).update(LOMBOK_PATH_KEY, lombokPath, true);
+            test(`when lombokPath is ${lombokPath}`, async () => {
+                await vscode.workspace.getConfiguration().update(LOMBOK_PATH_KEY, lombokPath, true);
 
                 const javaAgentArg = `-javaagent:"${expectedJarPath}"`;
 
@@ -52,7 +52,7 @@ suite("Extension Tests", function () {
     const userSettingsPath = getUserSettingsPath(process.platform);
 
     if (existsSync(userSettingsPath)) {
-        test("that Lombok -javaagent is removed from the VM arguments", async function () {
+        test("that Lombok -javaagent is removed from the VM arguments", async () => {
             const settings = JSON.parse(readFileSync(userSettingsPath, 'utf8'));
             const vmArgs: string = settings[VM_ARGS_KEY];
 

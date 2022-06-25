@@ -49,7 +49,7 @@ function downloadLatestJar(to: string) {
 }
 
 function getJarPath(): string {
-    const customJarPath = vscode.workspace.getConfiguration(name).get<string>(LOMBOK_PATH_KEY)?.trim();
+    const customJarPath = vscode.workspace.getConfiguration().get<string>(LOMBOK_PATH_KEY)?.trim();
     const builtInJarPath = path.join(getExtensionInstance().extensionPath, "server", "lombok.jar");
 
     if (customJarPath) {
