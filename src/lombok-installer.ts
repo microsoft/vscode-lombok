@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { ConfigurationTarget, WorkspaceConfiguration, Extension } from "vscode";
 import * as path from 'path';
-import { VM_ARGS_KEY, LOMBOK_PATH_KEY } from "./util";
+import { VM_ARGS_KEY, LOMBOK_PATH_KEY, LOMBOK_DOWNLOAD_URL } from "./util";
 import * as fs from "fs";
 
 const { publisher, name } = require('../package.json');
@@ -35,7 +35,7 @@ function downloadLatestJar(to: string) {
     }
 
     var file = fs.createWriteStream(to);
-    https.get("https://projectlombok.org/downloads/lombok.jar", function (response: any) {
+    https.get(LOMBOK_DOWNLOAD_URL, function (response: any) {
         logger.appendLine("Saving the downloaded lombok...");
         
         response.pipe(file);
