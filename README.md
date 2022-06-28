@@ -37,4 +37,7 @@ Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombo
 - [@val](https://projectlombok.org/features/val.html)
 - [@UtilityClass](https://projectlombok.org/features/experimental/UtilityClass.html)
 
-[I'm having issues](https://github.com/GabrielBB/vscode-lombok/issues)
+## Credits
+This project was originally started by [@GabrielBB](https://github.com/GabrielBB) and is now currently maintained by Microsoft. Huge thanks to [@GabrielBB](https://github.com/GabrielBB) who started it all and made this Lombok extension available.
+
+[I'm having issues](https://github.com/Microsoft/vscode-lombok/issues)
