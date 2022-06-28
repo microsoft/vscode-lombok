@@ -1,10 +1,10 @@
-# <img src="https://raw.githubusercontent.com/GabrielBB/vscode-lombok/master/images/icon.png" alt="Lombok logo" width="48" height="48">   vscode-lombok
+# <img src="https://raw.githubusercontent.com/microsoft/vscode-lombok/master/images/icon.png" alt="Lombok logo" width="48" height="48">   vscode-lombok
 ![VS Marketplace](https://vsmarketplacebadge.apphb.com/version-short/GabrielBB.vscode-lombok.svg)
 ![Installs](https://vsmarketplacebadge.apphb.com/installs-short/GabrielBB.vscode-lombok.svg)
 
 ## Overview
 
-https://marketplace.visualstudio.com/items?itemName=GabrielBB.vscode-lombok
+https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-lombok
 
 A lightweight extension to support [Lombok](https://projectlombok.org/) annotations processing in Visual Studio Code
 
