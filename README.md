@@ -1,6 +1,6 @@
 # <img src="https://raw.githubusercontent.com/microsoft/vscode-lombok/master/images/icon.png" alt="Lombok logo" width="48" height="48">   vscode-lombok
-![VS Marketplace](https://vsmarketplacebadge.apphb.com/version-short/GabrielBB.vscode-lombok.svg)
-![Installs](https://vsmarketplacebadge.apphb.com/installs-short/GabrielBB.vscode-lombok.svg)
+![VS Marketplace](https://vsmarketplacebadge.apphb.com/version-short/vscjava.vscode-lombok.svg)
+![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vscjava.vscode-lombok.svg)
 
 ## Overview
 
