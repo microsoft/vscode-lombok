@@ -3,7 +3,7 @@
     "displayName": "Lombok Annotations Support for VS Code",
     "description": "A lightweight extension to support Lombok annotations processing in Visual Studio Code",
     "version": "1.0.1",
-    "publisher": "GabrielBB",
+    "publisher": "vscjava",
     "icon": "images/icon.png",
     "license": "MIT",
     "engines": {
@@ -11,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/GabrielBB/vscode-lombok.git"
+        "url": "https://github.com/microsoft/vscode-lombok.git"
     },
     "keywords": [
         "lombok",
