@@ -8,3 +8,4 @@ tsconfig.json
 tslint.json
 **/**.vsix
 .github/**
+images/*.gif
