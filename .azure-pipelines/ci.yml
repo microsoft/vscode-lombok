@@ -1,0 +1,51 @@
+trigger:
+- main
+
+jobs:
+  - job: static_analysis
+    displayName: Static Code Analysis
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+    - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+      displayName: 'Run CredScan'
+      inputs:
+        toolMajorVersion: V2
+        verboseOutput: true
+        debugMode: false
+    - task: Semmle@1
+      displayName: Code QL for TS/JS
+      inputs:
+        sourceCodeDirectory: '$(Build.SourcesDirectory)'
+        language: 'tsandjs'
+        includeNodeModules: false
+        querySuite: 'Recommended'
+        timeout: '1800'
+        ram: '16384'
+        addProjectDirToScanningExclusionList: true
+    - task: PostAnalysis@1
+      displayName: 'Post Analysis'
+      inputs:
+        CredScan: true
+        Semmle: true
+        SemmleBreakOn: 'Error'
+        ToolLogsNotFoundAction: 'Standard'
+
+  - job: ci
+    displayName: VS Code Lombok CI
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Npm@1
+      displayName: 'npm install'
+      inputs:
+        verbose: false
+    - script: 'npx vsce@latest package'
+      displayName: 'package vsix'
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+      inputs:
+        Contents: '*.vsix'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
