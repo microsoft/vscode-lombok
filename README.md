@@ -1,10 +1,10 @@
-# <img src="https://raw.githubusercontent.com/GabrielBB/vscode-lombok/master/images/icon.png" alt="Lombok logo" width="48" height="48">   vscode-lombok
-![VS Marketplace](https://vsmarketplacebadge.apphb.com/version-short/GabrielBB.vscode-lombok.svg)
-![Installs](https://vsmarketplacebadge.apphb.com/installs-short/GabrielBB.vscode-lombok.svg)
+# <img src="https://raw.githubusercontent.com/microsoft/vscode-lombok/master/images/icon.png" alt="Lombok logo" width="48" height="48">   vscode-lombok
+![VS Marketplace](https://vsmarketplacebadge.apphb.com/version-short/vscjava.vscode-lombok.svg)
+![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vscjava.vscode-lombok.svg)
 
 ## Overview
 
-https://marketplace.visualstudio.com/items?itemName=GabrielBB.vscode-lombok
+https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-lombok
 
 A lightweight extension to support [Lombok](https://projectlombok.org/) annotations processing in Visual Studio Code
 
@@ -37,4 +37,7 @@ Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombo
 - [@val](https://projectlombok.org/features/val.html)
 - [@UtilityClass](https://projectlombok.org/features/experimental/UtilityClass.html)
 
-[I'm having issues](https://github.com/GabrielBB/vscode-lombok/issues)
+## Credits
+This project was originally started by [@GabrielBB](https://github.com/GabrielBB) and is now currently maintained by Microsoft. Huge thanks to [@GabrielBB](https://github.com/GabrielBB) who started it all and made this Lombok extension available.
+
+[I'm having issues](https://github.com/Microsoft/vscode-lombok/issues)
