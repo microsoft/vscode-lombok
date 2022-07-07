@@ -32,9 +32,6 @@ jobs:
     - name: Install VSCE
       run: npm install -g vsce
 
-    - name: Linting
-      run: npm run tslint
-
     - name: TSC Compile
       run: npm run compile
 
