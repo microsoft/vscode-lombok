@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as cp from 'child_process';
-import { runTests, downloadAndUnzipVSCode, resolveCliPathFromVSCodeExecutablePath } from 'vscode-test';
+import { runTests, downloadAndUnzipVSCode, resolveCliArgsFromVSCodeExecutablePath } from '@vscode/test-electron';
 
-(async () => {
+async function main(): Promise<void> {
     try {
         // The folder containing the Extension Manifest package.json
         // Passed to `--extensionDevelopmentPath`
@@ -15,10 +15,9 @@ import { runTests, downloadAndUnzipVSCode, resolveCliPathFromVSCodeExecutablePat
         // Download VS Code and unzip it
         const vscodeExecutablePath = await downloadAndUnzipVSCode('1.58.2');
 
-        const cliPath = resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
-
         // Install vscode-java extension to downloaded vscode
-        cp.spawnSync(cliPath, ['--install-extension', 'redhat.java'], {
+        const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
+        cp.spawnSync(cli, [...args, '--install-extension', 'redhat.java'], {
             encoding: 'utf-8',
             stdio: 'inherit'
         });
@@ -29,4 +28,6 @@ import { runTests, downloadAndUnzipVSCode, resolveCliPathFromVSCodeExecutablePat
         console.error('Failed to run tests');
         process.exit(1);
     }
-})();
+}
+
+main();
