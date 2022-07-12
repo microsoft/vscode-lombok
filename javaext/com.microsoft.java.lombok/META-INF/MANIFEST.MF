@@ -4,7 +4,7 @@ Bundle-Name: Lombok extension
 Bundle-SymbolicName: com.microsoft.java.lombok;singleton:=true
 Bundle-Version: 0.1.0
 Bundle-Activator: com.microsoft.java.lombok.LombokPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core,
