@@ -39,6 +39,9 @@
                     "java"
                 ]
             }
+        ],
+        "javaExtensions": [
+            "./plugins/com.microsoft.java.lombok-0.1.0.jar"
         ]
     },
     "scripts": {
@@ -48,7 +51,8 @@
         "watch": "tsc -watch -p ./",
         "package": "vsce package",
         "vscode:prepublish": "npm run compile",
-        "vscode:uninstall": "node ./out/uninstall-hook"
+        "vscode:uninstall": "node ./out/uninstall-hook",
+        "build-server": "node scripts/build/buildJdtlsExt.js"
     },
     "devDependencies": {
         "@types/jsonic": "^0.3.0",

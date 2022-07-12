@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.microsoft.java</groupId>
+  <artifactId>parent</artifactId>
+  <version>0.1.0</version>
+  <packaging>pom</packaging>
+  <name>lombok.support :: parent</name>
+  <description>lombok.support parent</description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <tycho.version>2.7.3</tycho.version>
+    <tycho.extras.version>2.7.3</tycho.extras.version>
+    <tycho.generateSourceReferences>false</tycho.generateSourceReferences>
+    <tycho.test.platformArgs/>
+    <tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
+  </properties>
+
+  <modules>
+    <module>com.microsoft.java.lombok</module>
+  </modules>
+
+  <repositories>
+    <repository>
+      <id>202203</id>
+      <layout>p2</layout>
+      <url>https://download.eclipse.org/releases/2022-03/</url>
+    </repository>
+    <repository>
+      <id>jdt.ls</id>
+      <layout>p2</layout>
+      <url>http://download.eclipse.org/jdtls/snapshots/repository/latest/</url>
+    </repository>
+    </repositories>
+    <build>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-maven-plugin</artifactId>
+        <version>${tycho.version}</version>
+        <extensions>true</extensions>
+      </plugin>
+      <plugin>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>target-platform-configuration</artifactId>
+        <version>${tycho.version}</version>
+        <configuration>
+          <resolver>p2</resolver>
+          <pomDependencies>consider</pomDependencies>
+          <ignoreTychoRepositories>true</ignoreTychoRepositories>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-packaging-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+            <format>yyyyMMdd-HHmm</format>
+            <sourceReferences>
+              <generate>${tycho.generateSourceReferences}</generate>
+            </sourceReferences>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.eclipse.tycho.extras</groupId>
+              <artifactId>tycho-sourceref-jgit</artifactId>
+              <version>${tycho.extras.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-surefire-plugin</artifactId>
+          <version>${tycho.version}</version>
+          <configuration>
+            <useUIHarness>true</useUIHarness>
+            <argLine>${tycho.test.jvmArgs}</argLine>
+            <!-- kill test JVM if tests take more than 1 minute (60 seconds) to finish -->
+            <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
