@@ -2,6 +2,8 @@
 ![VS Marketplace](https://vsmarketplacebadge.apphb.com/version-short/vscjava.vscode-lombok.svg)
 ![Installs](https://vsmarketplacebadge.apphb.com/installs-short/vscjava.vscode-lombok.svg)
 
+⚠️[Language Support for Java(TM) by RedHat](https://marketplace.visualstudio.com/items?itemName=redhat.java) extension 1.8.0 will automatically use the lombok.jar from your project classpath for Lombok support. The embedded lombok.jar in the vscode-lombok extension will be deprecated in favor of RedHat Java extension.
+
 ## Overview
 
 https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-lombok
