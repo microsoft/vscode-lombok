@@ -1,15 +1,42 @@
 {
-	"rules": {
-		"no-string-throw": true,
-		"no-unused-expression": true,
-		"no-duplicate-variable": true,
-		"curly": true,
-		"class-name": true,
-		"semicolon": [
-			true,
-			"always"
-		],
-		"triple-equals": true
-	},
-	"defaultSeverity": "warning"
+    "extends": "tslint:latest",
+    "rules": {
+        "variable-name": [
+            true,
+            "allow-leading-underscore"
+        ],
+        "no-unused-expression": false,
+        "no-duplicate-variable": false,
+        "max-classes-per-file": false,
+        "no-implicit-dependencies": [
+            false,
+            "dev"
+        ],
+        "no-empty": false,
+        "object-literal-sort-keys": false,
+        "curly": true,
+        "class-name": true,
+        "whitespace": [
+            true,
+            "check-branch",
+            "check-decl",
+            "check-operator",
+            "check-module",
+            "check-separator",
+            "check-type"
+        ],
+        "semicolon": true,
+        "triple-equals": true,
+        "max-line-length": [
+            false,
+            150
+        ],
+        "no-angle-bracket-type-assertion": false,
+        "no-console": [
+            false,
+            "log",
+            "error"
+        ],
+        "no-submodule-imports": false
+    }
 }

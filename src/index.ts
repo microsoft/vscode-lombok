@@ -1,12 +1,13 @@
 'use strict';
 import * as vscode from 'vscode';
-import { install } from './lombok-installer';
+import { registerCodaActionCommand, LombokCodeActionProvider } from './codeActionProvider';
 
 
 export function activate(context: vscode.ExtensionContext) {
-    install();
+    registerCodaActionCommand(context);
+    context.subscriptions.push(vscode.languages.registerCodeActionsProvider({ scheme: 'file', language: 'java' }, new LombokCodeActionProvider()));
 }
 
-export function deactivate(context: vscode.ExtensionContext) {
-    // VSCode doesn't support settings removing during deactivation (issue #45474)
+
+export function deactivate() {
 }
