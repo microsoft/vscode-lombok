@@ -34,15 +34,17 @@ public class DataHandler {
     public static TextEdit generateDataTextEdit(CodeActionParams params, IProgressMonitor monitor) {
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
         if (type == null || type.getCompilationUnit() == null) {
-			return null;
-		}
-        
+            return null;
+        }
+
         TextEdit textEdit = new MultiTextEdit();
-        TextEdit allArgsConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor, ConstructorKind.ALLARGSCONSTRUCTOR);
+        TextEdit allArgsConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor,
+                ConstructorKind.ALLARGSCONSTRUCTOR);
         if (allArgsConstructorTextEdit != null) {
             textEdit.addChild(allArgsConstructorTextEdit);
         }
-        TextEdit noArgConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor, ConstructorKind.NOARGCONSTRUCTOR);
+        TextEdit noArgConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor,
+                ConstructorKind.NOARGCONSTRUCTOR);
         if (noArgConstructorTextEdit != null) {
             textEdit.addChild(noArgConstructorTextEdit);
         }
@@ -58,26 +60,28 @@ public class DataHandler {
         if (hashCodeEqualsTextEdit != null) {
             textEdit.addChild(hashCodeEqualsTextEdit);
         }
-        
+
         return textEdit;
     }
 
-    public static void removeMethods(IType type, ListRewrite rewriter, IProgressMonitor monitor){
-        try{
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+    public static void removeMethods(IType type, ListRewrite rewriter, IProgressMonitor monitor) {
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return;
+                return;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return;
-		    }
-            
-            Set<String> dataMethods = new HashSet<String>(Arrays.asList(lombokCanEqualMethod, lombokEqualsMethod, lombokHashCodeMethod, lombokToStringMethod));
+            if (typeBinding == null) {
+                return;
+            }
+
+            Set<String> dataMethods = new HashSet<String>(Arrays.asList(lombokCanEqualMethod, lombokEqualsMethod,
+                    lombokHashCodeMethod, lombokToStringMethod));
             String className = typeBinding.getName();
             dataMethods.add(className);
             AccessorField[] accessors = GetterSetterHandler.getimplementedAccessors(type, AccessorKind.BOTH);
-            for(AccessorField accessor : accessors) {
+            for (AccessorField accessor : accessors) {
                 IField field = type.getField(accessor.fieldName);
                 String getterName = GetterSetterUtil.getGetterName(field, null);
                 String setterName = GetterSetterUtil.getSetterName(field, null);
@@ -85,19 +89,19 @@ public class DataHandler {
                 dataMethods.add(setterName);
             }
             IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
-            for(IMethodBinding item : declaredMethods){
+            for (IMethodBinding item : declaredMethods) {
                 if (item.isDefaultConstructor()) {
                     continue;
                 }
-                if(dataMethods.contains(item.getName())){
+                if (dataMethods.contains(item.getName())) {
                     item.getName();
                     ASTNode node = astRoot.findDeclaringNode(item);
                     rewriter.replace(node, null, null);
                 }
             }
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Remove Lombok @Data methods", e);
-		}
+            JavaLanguageServerPlugin.logException("Remove Lombok @Data methods", e);
+        }
         return;
     }
 }

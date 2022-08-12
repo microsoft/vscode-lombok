@@ -25,26 +25,27 @@ import com.microsoft.java.lombok.ConstructorHandler;
 
 public class ConstructorHandler {
     public static void removeMethods(IType type, ListRewrite rewriter, ConstructorKind kind, IProgressMonitor monitor) {
-        try{
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return;
+                return;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return;
-		    }
+            if (typeBinding == null) {
+                return;
+            }
 
             String className = typeBinding.getName();
             int fieldsNum = typeBinding.getDeclaredFields().length;
             IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
-            for(IMethodBinding item : declaredMethods){
+            for (IMethodBinding item : declaredMethods) {
                 if (item.isDefaultConstructor()) {
                     continue;
                 }
                 ITypeBinding[] parameterTypes = item.getParameterTypes();
                 int parametersNum = parameterTypes.length;
-                if(item.getName().equals(className)) {
+                if (item.getName().equals(className)) {
                     if (kind == ConstructorKind.NOARGCONSTRUCTOR && parametersNum == 0) {
                         ASTNode node = astRoot.findDeclaringNode(item);
                         rewriter.replace(node, null, null);
@@ -59,18 +60,20 @@ public class ConstructorHandler {
             }
 
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Remove Lombok method", e);
-		}
+            JavaLanguageServerPlugin.logException("Remove Lombok method", e);
+        }
         return;
     }
 
-    public static TextEdit generateConstructor(CodeActionParams params, IProgressMonitor monitor, ConstructorKind kind){
+    public static TextEdit generateConstructor(CodeActionParams params, IProgressMonitor monitor,
+            ConstructorKind kind) {
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
-        CheckConstructorsResponse response = GenerateConstructorsHandler.checkConstructorStatus(type, params.getRange(), monitor);
+        CheckConstructorsResponse response = GenerateConstructorsHandler.checkConstructorStatus(type, params.getRange(),
+                monitor);
         if (response.constructors.length == 0 || response.constructors == null) {
             return null;
         }
-        LspMethodBinding[] constructors = {response.constructors[0]};
+        LspMethodBinding[] constructors = { response.constructors[0] };
         LspVariableBinding[] fields = new LspVariableBinding[] {};
         switch (kind) {
             case NOARGCONSTRUCTOR:
@@ -80,22 +83,24 @@ public class ConstructorHandler {
                 break;
         }
         Preferences preferences = JavaLanguageServerPlugin.getPreferencesManager().getPreferences();
-		CodeGenerationSettings settings = new CodeGenerationSettings();
-		settings.createComments = preferences.isCodeGenerationTemplateGenerateComments();
+        CodeGenerationSettings settings = new CodeGenerationSettings();
+        settings.createComments = preferences.isCodeGenerationTemplateGenerateComments();
         return GenerateConstructorsHandler.generateConstructors(type, constructors, fields, settings, null, monitor);
     }
-    
+
     public enum ConstructorKind {
         NOARGCONSTRUCTOR(0), ALLARGSCONSTRUCTOR(1);
-        
+
         private final int value;
+
         private ConstructorKind(int value) {
             this.value = value;
         }
+
         public int getValue() {
             return value;
         }
     }
 
-    private static final String[] annotationKind = {"NoArgsConstructor", "AllArgsConstructor"};
+    private static final String[] annotationKind = { "NoArgsConstructor", "AllArgsConstructor" };
 }

@@ -28,54 +28,53 @@ import org.eclipse.lsp4j.CodeActionParams;
 
 public class AnnotationHandler {
     public static Set<String> lombokAnnotationSet = new HashSet<String>(Arrays.asList(
-        "Data", "NoArgsConstructor", "AllArgsConstructor", "ToString", "EqualsAndHashCode"
-        ));
+            "Data", "NoArgsConstructor", "AllArgsConstructor", "ToString", "EqualsAndHashCode"));
     public static final String lombokDataAnnotaion = "Data";
     public static final String lombokNoArgsConstructorAnnotaion = "NoArgsConstructor";
     public static final String lombokAllArgsConstructorAnnotaion = "AllArgsConstructor";
     public static final String lombokToStringAnnotation = "ToString";
     public static final String lombokEqualsAndHashCodeAnnotation = "EqualsAndHashCode";
 
-    public static AnnotationResponse findLombokAnnotation(CodeActionParams params, IProgressMonitor monitor){
+    public static AnnotationResponse findLombokAnnotation(CodeActionParams params, IProgressMonitor monitor) {
         IType type = SourceAssistProcessor.getSelectionType(params);
-        try{
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return null;
+                return null;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return null;
-		    }
-            
+            if (typeBinding == null) {
+                return null;
+            }
+
             List<String> result = new ArrayList<String>();
             IAnnotationBinding[] annotations = typeBinding.getAnnotations();
-            for(IAnnotationBinding item : annotations){
-                if(lombokAnnotationSet.contains(item.getName())){
+            for (IAnnotationBinding item : annotations) {
+                if (lombokAnnotationSet.contains(item.getName())) {
                     result.add(item.getName());
                 }
             }
             AnnotationResponse response = new AnnotationResponse(result.toArray(new String[result.size()]));
             return response;
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Find Lombok annotation", e);
-		}
+            JavaLanguageServerPlugin.logException("Find Lombok annotation", e);
+        }
         return null;
     }
 
-
     public static List<String> getSelectAnnotations(CodeActionParams params, IProgressMonitor monitor) {
         List<String> result = new ArrayList<String>();
-        try{
+        try {
             IType type = SourceAssistProcessor.getSelectionType(params);
             final ICompilationUnit unit = JDTUtils.resolveCompilationUnit(params.getTextDocument().getUri());
             CompilationUnit astRoot = CodeActionHandler.getASTRoot(unit, monitor);
             InnovationContext context = CodeActionHandler.getContext(unit, astRoot, params.getRange());
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
             ASTNode classNode = astRoot.findDeclaringNode(typeBinding);
-		    ArrayList<ASTNode> coveredNodes = QuickAssistProcessor.getFullyCoveredNodes(context, classNode);
+            ArrayList<ASTNode> coveredNodes = QuickAssistProcessor.getFullyCoveredNodes(context, classNode);
 
-            for(ASTNode node : coveredNodes){
+            for (ASTNode node : coveredNodes) {
                 if (node instanceof MarkerAnnotation) {
                     MarkerAnnotation annotation = (MarkerAnnotation) node;
                     String name = annotation.resolveAnnotationBinding().getName();
@@ -99,7 +98,8 @@ public class AnnotationHandler {
 
     public static class AnnotationResponse {
         public String[] annotations;
-        AnnotationResponse(String[] annotations){
+
+        AnnotationResponse(String[] annotations) {
             this.annotations = annotations;
         }
     }

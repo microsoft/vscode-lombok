@@ -29,37 +29,40 @@ public class EqualsAndHashCodeHandler {
     public static TextEdit generateHashCodeEquals(CodeActionParams params, IProgressMonitor monitor) {
         CheckHashCodeEqualsResponse response = HashCodeEqualsHandler.checkHashCodeEqualsStatus(params);
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
-		Preferences preferences = JavaLanguageServerPlugin.getPreferencesManager().getPreferences();
-		boolean useJava7Objects = preferences.isHashCodeEqualsTemplateUseJava7Objects();
-		boolean useInstanceof = preferences.isHashCodeEqualsTemplateUseInstanceof();
-		boolean useBlocks = preferences.isCodeGenerationTemplateUseBlocks();
-		boolean generateComments = preferences.isCodeGenerationTemplateGenerateComments();
-		return HashCodeEqualsHandler.generateHashCodeEqualsTextEdit(type, response.fields, true, useJava7Objects, useInstanceof, useBlocks, generateComments, params.getRange(), monitor);
+        Preferences preferences = JavaLanguageServerPlugin.getPreferencesManager().getPreferences();
+        boolean useJava7Objects = preferences.isHashCodeEqualsTemplateUseJava7Objects();
+        boolean useInstanceof = preferences.isHashCodeEqualsTemplateUseInstanceof();
+        boolean useBlocks = preferences.isCodeGenerationTemplateUseBlocks();
+        boolean generateComments = preferences.isCodeGenerationTemplateGenerateComments();
+        return HashCodeEqualsHandler.generateHashCodeEqualsTextEdit(type, response.fields, true, useJava7Objects,
+                useInstanceof, useBlocks, generateComments, params.getRange(), monitor);
     }
-    
+
     public static void removeMethods(IType type, ListRewrite rewriter, IProgressMonitor monitor) {
-        try{
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return;
+                return;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return;
-		    }
-            
-            Set<String> dataMethods = new HashSet<String>(Arrays.asList(lombokCanEqualMethod, lombokEqualsMethod, lombokHashCodeMethod));
+            if (typeBinding == null) {
+                return;
+            }
+
+            Set<String> dataMethods = new HashSet<String>(
+                    Arrays.asList(lombokCanEqualMethod, lombokEqualsMethod, lombokHashCodeMethod));
             IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
-            for(IMethodBinding item : declaredMethods){
-                if(dataMethods.contains(item.getName())){
+            for (IMethodBinding item : declaredMethods) {
+                if (dataMethods.contains(item.getName())) {
                     item.getName();
                     ASTNode node = astRoot.findDeclaringNode(item);
                     rewriter.replace(node, null, null);
                 }
             }
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Remove Lombok methods", e);
-		}
+            JavaLanguageServerPlugin.logException("Remove Lombok methods", e);
+        }
         return;
     }
 }

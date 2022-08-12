@@ -25,31 +25,32 @@ public class ToStringHandler {
         CheckToStringResponse response = GenerateToStringHandler.checkToStringStatus(params);
         IType type = SourceAssistProcessor.getSelectionType(params);
         IJavaElement insertPosition = CodeGenerationUtils.findInsertElement(type, null);
-		return GenerateToStringHandler.generateToString(type, response.fields, insertPosition, monitor);
+        return GenerateToStringHandler.generateToString(type, response.fields, insertPosition, monitor);
     }
 
     public static void removeMethods(IType type, ListRewrite rewriter, IProgressMonitor monitor) {
-        try{
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return;
+                return;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return;
-		    }
-            
+            if (typeBinding == null) {
+                return;
+            }
+
             IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
-            for(IMethodBinding item : declaredMethods){
-                if(item.getName().equals(lombokToStringMethod)){
+            for (IMethodBinding item : declaredMethods) {
+                if (item.getName().equals(lombokToStringMethod)) {
                     item.getName();
                     ASTNode node = astRoot.findDeclaringNode(item);
                     rewriter.replace(node, null, null);
                 }
             }
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Remove Lombok methods", e);
-		}
+            JavaLanguageServerPlugin.logException("Remove Lombok methods", e);
+        }
         return;
     }
 }

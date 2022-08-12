@@ -32,19 +32,21 @@ import org.eclipse.jdt.ls.core.internal.text.correction.SourceAssistProcessor;
 import org.eclipse.jdt.internal.corext.codemanipulation.ContextSensitiveImportRewriteContext;
 import org.eclipse.jdt.internal.corext.dom.ASTNodes;
 import org.eclipse.jdt.internal.corext.refactoring.structure.CompilationUnitRewrite;
+
 public class JavaCodeActionHandler {
     public static WorkspaceEdit lombokAction(LombokRequestParams params, IProgressMonitor monitor) {
         IType type = SourceAssistProcessor.getSelectionType(params.context, monitor);
         if (type == null || type.getCompilationUnit() == null) {
-			return null;
-		}
+            return null;
+        }
 
         List<String> lombokAnnotations = new ArrayList<>(Arrays.asList(params.lombokAnnotations));
         List<String> removeMethodsAnnotations = new ArrayList<>(Arrays.asList(params.lombokAnnotations));
         List<String> delombokAnnotations = new ArrayList<>(Arrays.asList(params.delombokAnnotations));
         List<String> addMethodskAnnotations = new ArrayList<>(Arrays.asList(params.delombokAnnotations));
 
-        // delombok @Data will add methods which lombok following annotations will remove. We don't remove these methods.
+        // delombok @Data will add methods which lombok following annotations will
+        // remove. We don't remove these methods.
         if (delombokAnnotations.contains(AnnotationHandler.lombokDataAnnotaion)) {
             removeMethodsAnnotations.remove(AnnotationHandler.lombokNoArgsConstructorAnnotaion);
             removeMethodsAnnotations.remove(AnnotationHandler.lombokAllArgsConstructorAnnotaion);
@@ -52,7 +54,8 @@ public class JavaCodeActionHandler {
             removeMethodsAnnotations.remove(AnnotationHandler.lombokEqualsAndHashCodeAnnotation);
         }
 
-        // lombok @Data will remove methods which delombok following annotations will add. We don't add these methods.
+        // lombok @Data will remove methods which delombok following annotations will
+        // add. We don't add these methods.
         if (lombokAnnotations.contains(AnnotationHandler.lombokDataAnnotaion)) {
             addMethodskAnnotations.remove(AnnotationHandler.lombokNoArgsConstructorAnnotaion);
             addMethodskAnnotations.remove(AnnotationHandler.lombokAllArgsConstructorAnnotaion);
@@ -81,7 +84,8 @@ public class JavaCodeActionHandler {
             textEdit.addChild(addMethodEdit);
         }
 
-        return (textEdit == null) ? null : SourceAssistProcessor.convertToWorkspaceEdit(type.getCompilationUnit(), textEdit);
+        return (textEdit == null) ? null
+                : SourceAssistProcessor.convertToWorkspaceEdit(type.getCompilationUnit(), textEdit);
     }
 
     public static TextEdit addMethods(CodeActionParams params, List<String> annotations, IProgressMonitor monitor) {
@@ -91,12 +95,13 @@ public class JavaCodeActionHandler {
 
         TextEdit textEdit = new MultiTextEdit();
 
-        if (annotations.contains(AnnotationHandler.lombokDataAnnotaion)){
+        if (annotations.contains(AnnotationHandler.lombokDataAnnotaion)) {
             TextEdit delombokDataEdit = DataHandler.generateDataTextEdit(params, monitor);
             if (delombokDataEdit != null) {
                 textEdit.addChild(delombokDataEdit);
             }
-            // @Data annotation include @NoArgsConstructor, @AllArgsConstructor, @ToString and @EqualsAndHashCode, we don't need to delombok them.
+            // @Data annotation include @NoArgsConstructor, @AllArgsConstructor, @ToString
+            // and @EqualsAndHashCode, we don't need to delombok them.
             annotations.remove(AnnotationHandler.lombokNoArgsConstructorAnnotaion);
             annotations.remove(AnnotationHandler.lombokAllArgsConstructorAnnotaion);
             annotations.remove(AnnotationHandler.lombokToStringAnnotation);
@@ -104,14 +109,16 @@ public class JavaCodeActionHandler {
         }
 
         if (annotations.contains(AnnotationHandler.lombokNoArgsConstructorAnnotaion)) {
-            TextEdit delombokNoArgsConstructorEdit = ConstructorHandler.generateConstructor(params, monitor, ConstructorKind.NOARGCONSTRUCTOR);
+            TextEdit delombokNoArgsConstructorEdit = ConstructorHandler.generateConstructor(params, monitor,
+                    ConstructorKind.NOARGCONSTRUCTOR);
             if (delombokNoArgsConstructorEdit != null) {
                 textEdit.addChild(delombokNoArgsConstructorEdit);
             }
         }
 
         if (annotations.contains(AnnotationHandler.lombokAllArgsConstructorAnnotaion)) {
-            TextEdit delombokAllArgsConstructorEdit = ConstructorHandler.generateConstructor(params, monitor, ConstructorKind.ALLARGSCONSTRUCTOR);
+            TextEdit delombokAllArgsConstructorEdit = ConstructorHandler.generateConstructor(params, monitor,
+                    ConstructorKind.ALLARGSCONSTRUCTOR);
             if (delombokAllArgsConstructorEdit != null) {
                 textEdit.addChild(delombokAllArgsConstructorEdit);
             }
@@ -133,29 +140,33 @@ public class JavaCodeActionHandler {
         return textEdit;
     }
 
-    public static TextEdit removeAnnotations(CodeActionParams params, List<String> annotations, IProgressMonitor monitor) {
+    public static TextEdit removeAnnotations(CodeActionParams params, List<String> annotations,
+            IProgressMonitor monitor) {
         if (annotations.isEmpty()) {
             return null;
         }
 
         IType type = SourceAssistProcessor.getSelectionType(params);
-        try{
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return null;
+                return null;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return null;
-		    }
-            CompilationUnitRewrite fRewrite = new CompilationUnitRewrite((ICompilationUnit) astRoot.getTypeRoot(), astRoot);
+            if (typeBinding == null) {
+                return null;
+            }
+            CompilationUnitRewrite fRewrite = new CompilationUnitRewrite((ICompilationUnit) astRoot.getTypeRoot(),
+                    astRoot);
             AbstractTypeDeclaration declaration = (AbstractTypeDeclaration) astRoot.findDeclaringNode(typeBinding);
-			ListRewrite rewriter = fRewrite.getASTRewrite().getListRewrite(declaration, declaration.getBodyDeclarationsProperty());
-            
+            ListRewrite rewriter = fRewrite.getASTRewrite().getListRewrite(declaration,
+                    declaration.getBodyDeclarationsProperty());
+
             boolean hasAnnotation = false;
             IAnnotationBinding[] allAnnotations = typeBinding.getAnnotations();
-            for(IAnnotationBinding item : allAnnotations){
-                if(annotations.contains(item.getName())){
+            for (IAnnotationBinding item : allAnnotations) {
+                if (annotations.contains(item.getName())) {
                     hasAnnotation = true;
                     ASTNode node = astRoot.findDeclaringNode(item);
                     fRewrite.getASTRewrite().remove(node, null);
@@ -165,15 +176,15 @@ public class JavaCodeActionHandler {
             if (!hasAnnotation) {
                 return null;
             }
-            
+
             CompilationUnitChange change = fRewrite.createChange(true);
-            if (change == null){
+            if (change == null) {
                 return null;
             }
             return change.getEdit();
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Remove Lombok annotations", e);
-		}
+            JavaLanguageServerPlugin.logException("Remove Lombok annotations", e);
+        }
         return null;
     }
 
@@ -181,25 +192,28 @@ public class JavaCodeActionHandler {
         if (annotations.isEmpty()) {
             return null;
         }
-        try{
+        try {
             IType type = SourceAssistProcessor.getSelectionType(params);
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return null;
+                return null;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return null;
-		    }
-            CompilationUnitRewrite fRewrite = new CompilationUnitRewrite((ICompilationUnit) astRoot.getTypeRoot(), astRoot);
+            if (typeBinding == null) {
+                return null;
+            }
+            CompilationUnitRewrite fRewrite = new CompilationUnitRewrite((ICompilationUnit) astRoot.getTypeRoot(),
+                    astRoot);
             AbstractTypeDeclaration declaration = (AbstractTypeDeclaration) astRoot.findDeclaringNode(typeBinding);
-		    ListRewrite rewriter = fRewrite.getASTRewrite().getListRewrite(declaration, declaration.getBodyDeclarationsProperty());
+            ListRewrite rewriter = fRewrite.getASTRewrite().getListRewrite(declaration,
+                    declaration.getBodyDeclarationsProperty());
             // remove exists methods
             if (annotations.contains(AnnotationHandler.lombokDataAnnotaion)) {
                 DataHandler.removeMethods(type, rewriter, monitor);
             }
             if (annotations.contains(AnnotationHandler.lombokNoArgsConstructorAnnotaion)) {
-                 ConstructorHandler.removeMethods(type, rewriter, ConstructorKind.NOARGCONSTRUCTOR, monitor);
+                ConstructorHandler.removeMethods(type, rewriter, ConstructorKind.NOARGCONSTRUCTOR, monitor);
             }
             if (annotations.contains(AnnotationHandler.lombokAllArgsConstructorAnnotaion)) {
                 ConstructorHandler.removeMethods(type, rewriter, ConstructorKind.ALLARGSCONSTRUCTOR, monitor);
@@ -212,13 +226,13 @@ public class JavaCodeActionHandler {
             }
 
             CompilationUnitChange change = fRewrite.createChange(true);
-            if (change == null){
+            if (change == null) {
                 return null;
             }
             return change.getEdit();
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Remove Lombok methods", e);
-		}
+            JavaLanguageServerPlugin.logException("Remove Lombok methods", e);
+        }
         return null;
     }
 
@@ -228,41 +242,45 @@ public class JavaCodeActionHandler {
         }
 
         IType type = SourceAssistProcessor.getSelectionType(params);
-        try{
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(), CoreASTProvider.WAIT_YES, monitor);
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
             if (astRoot == null) {
-		    	return null;
+                return null;
             }
             ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-		    if (typeBinding == null) {
-		    	return null;
-		    }
-            CompilationUnitRewrite fRewrite = new CompilationUnitRewrite((ICompilationUnit) astRoot.getTypeRoot(), astRoot);
+            if (typeBinding == null) {
+                return null;
+            }
+            CompilationUnitRewrite fRewrite = new CompilationUnitRewrite((ICompilationUnit) astRoot.getTypeRoot(),
+                    astRoot);
             AbstractTypeDeclaration declaration = (AbstractTypeDeclaration) astRoot.findDeclaringNode(typeBinding);
-			ListRewrite rewriter = fRewrite.getASTRewrite().getListRewrite(declaration, declaration.getModifiersProperty());
+            ListRewrite rewriter = fRewrite.getASTRewrite().getListRewrite(declaration,
+                    declaration.getModifiersProperty());
             ImportRewrite imports = fRewrite.getImportRewrite();
-            AST ast= fRewrite.getASTRewrite().getAST();
-		    ASTNode root= declaration.getRoot();
-		    ImportRewriteContext context= null;
-		    if (root instanceof CompilationUnit) {
-			    context = new ContextSensitiveImportRewriteContext((CompilationUnit) root, declaration.getStartPosition(), imports);
-		    }
+            AST ast = fRewrite.getASTRewrite().getAST();
+            ASTNode root = declaration.getRoot();
+            ImportRewriteContext context = null;
+            if (root instanceof CompilationUnit) {
+                context = new ContextSensitiveImportRewriteContext((CompilationUnit) root,
+                        declaration.getStartPosition(), imports);
+            }
 
             for (String annotaion : annotations) {
-                Annotation marker= ast.newMarkerAnnotation();
-		        marker.setTypeName(ast.newName(annotaion)); //$NON-NLS-1$
-		        rewriter.insertFirst(marker, null);
+                Annotation marker = ast.newMarkerAnnotation();
+                marker.setTypeName(ast.newName(annotaion)); // $NON-NLS-1$
+                rewriter.insertFirst(marker, null);
             }
-            
+
             CompilationUnitChange change = fRewrite.createChange(true);
-            if (change == null){
+            if (change == null) {
                 return null;
             }
             return change.getEdit();
 
         } catch (Exception e) {
-			JavaLanguageServerPlugin.logException("Add Lombok annotations", e);
-		}
+            JavaLanguageServerPlugin.logException("Add Lombok annotations", e);
+        }
         return null;
     }
 
@@ -271,5 +289,5 @@ public class JavaCodeActionHandler {
         public String[] lombokAnnotations;
         public String[] delombokAnnotations;
     }
-    
+
 }

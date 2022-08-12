@@ -1,5 +1,5 @@
 
-import { commands, ExtensionContext, window, workspace, CodeActionProvider, CancellationToken, CodeAction, CodeActionContext, Command, ProviderResult, Range, Selection, TextDocument, TextEditorRevealType, CodeActionProviderMetadata, CodeActionKind, ThemeIcon, Uri, env, Disposable, QuickPickItem } from "vscode";
+import { commands, ExtensionContext, window, workspace, CodeActionProvider, CancellationToken, CodeAction, CodeActionContext, Command, ProviderResult, Range, Selection, TextDocument, TextEditorRevealType, CodeActionProviderMetadata, CodeActionKind, ThemeIcon, Uri, env, Disposable, QuickPickItem, QuickPickItemKind } from "vscode";
 import { Commands, executeJavaLanguageServerCommand } from './commands';
 import * as ProtocolConverter from "vscode-languageclient/lib/common/protocolConverter";
 import * as CodeConverter from "vscode-languageclient/lib/common/codeConverter";
@@ -10,6 +10,7 @@ const protoConverter: ProtocolConverter.Converter = ProtocolConverter.createConv
 const codeConverter: CodeConverter.Converter = CodeConverter.createConverter();
 
 const allLombokAnnotations = ["Data", "NoArgsConstructor", "AllArgsConstructor", "ToString", "EqualsAndHashCode"];
+
 const annotationsDescriptions = [
     "Bundles the features of @ToString, @EqualsAndHashCode, @Getter, @Setter and @RequiredArgsConstructor together",
     "Generate a constructor with no parameters.",
@@ -52,14 +53,13 @@ async function revealWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<void> 
 }
 
 export function registerCodaActionCommand(context: ExtensionContext) {
-    context.subscriptions.push(commands.registerCommand(Commands.CODEACTION_LOMBOK, async (params: CodeActionParams) => {
+    context.subscriptions.push(commands.registerCommand(Commands.CODEACTION_LOMBOK, async (params: CodeActionParams, selectedAnnotations: string[]) => {
         params.context.diagnostics = [];
-        const selectAnnotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_SELECTANNOTATION, JSON.stringify(params)) as AnnotationResponse;
         let selectAnnotations = [];
         let lombokAnnotations = [];
         let delombokAnnotations = [];
-        if (selectAnnotationResponse.annotations.length > 0) {
-            delombokAnnotations = selectAnnotationResponse.annotations;
+        if (selectedAnnotations.length > 0) {
+            delombokAnnotations = selectedAnnotations;
         }
         else {
             const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
@@ -76,18 +76,32 @@ export function registerCodaActionCommand(context: ExtensionContext) {
                     }]
                 };
             });
-            const initSelectItems = annotationItems.filter((item) => {
+            const needDelombokItems = annotationItems.filter((item) => {
                 return annotationResponse.annotations.indexOf(item.label.split('@')[1]) >= 0;
             });
+            const needLombokItems = annotationItems.filter((item) => {
+                return annotationResponse.annotations.indexOf(item.label.split('@')[1]) < 0;
+            });
+            let showItems = [];
+            showItems.push({
+                label: "Unselect to Delombok",
+                kind: QuickPickItemKind.Separator
+            });
+            showItems = showItems.concat(needDelombokItems);
+            showItems.push({
+                label: "Select to Lombok",
+                kind: QuickPickItemKind.Separator
+            });
+            showItems = showItems.concat(needLombokItems);
 
             const disposables: Disposable[] = [];
             const selectItems = await new Promise<readonly QuickPickItem[]>(async (resolve, reject) => {
                 const pickBox = window.createQuickPick();
-                pickBox.items = annotationItems;
+                pickBox.items = showItems;
                 pickBox.canSelectMany = true;
                 pickBox.ignoreFocusOut = true;
-                pickBox.selectedItems = initSelectItems;
-                pickBox.placeholder = 'Select the Lombok Annotation';
+                pickBox.selectedItems = needDelombokItems;
+                pickBox.placeholder = 'Select to Lombok or Unselect to Delombok';
 
                 disposables.push(
                     pickBox.onDidTriggerItemButton(e => {
@@ -131,6 +145,12 @@ export function registerCodaActionCommand(context: ExtensionContext) {
     }));
 }
 
+function getSelectAnnotations(text: string): string[] {
+    const annotations = allLombokAnnotations.filter((item) => {
+        return text.indexOf(`@${item}`) >= 0;
+    });
+    return annotations;
+}
 
 export class LombokCodeActionProvider implements CodeActionProvider {
     provideCodeActions(document: TextDocument, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<(CodeAction | Command)[]> {
@@ -139,14 +159,24 @@ export class LombokCodeActionProvider implements CodeActionProvider {
             range: codeConverter.asRange(range),
             context: codeConverter.asCodeActionContext(context)
         };
+        const selectText = document.getText(range);
+        let codeActionTitle = "Lombok...";
+        let selectAnnotations = [];
+        if (selectText !== "") {
+            selectAnnotations = getSelectAnnotations(selectText);
+            if (selectAnnotations.length > 0){
+                codeActionTitle = "Lombok";
+            }
+        }
+
         return [
             {
-                title: "Lombok",
+                title: codeActionTitle,
                 kind: CodeActionKind.Refactor,
                 command: {
-                    title: "Lombok",
+                    title: codeActionTitle,
                     command: Commands.CODEACTION_LOMBOK,
-                    arguments: [params]
+                    arguments: [params, selectAnnotations]
                 },
             }
         ];
