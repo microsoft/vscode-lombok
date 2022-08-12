@@ -165,7 +165,7 @@ export class LombokCodeActionProvider implements CodeActionProvider {
         if (selectText !== "") {
             selectAnnotations = getSelectAnnotations(selectText);
             if (selectAnnotations.length > 0){
-                codeActionTitle = "Lombok";
+                codeActionTitle = "Delombok";
             }
         }
 
