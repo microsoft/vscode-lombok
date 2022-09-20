@@ -1,10 +1,14 @@
 package com.microsoft.java.lombok;
 
+import java.util.Arrays;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.manipulation.CoreASTProvider;
@@ -35,23 +39,20 @@ public class ConstructorHandler {
             if (typeBinding == null) {
                 return;
             }
+            
+            long nonStaticFieldLength = Arrays.stream(typeBinding.getDeclaredFields()).filter(field -> !Modifier.isStatic(field.getModifiers())).count();
 
-            String className = typeBinding.getName();
-            int fieldsNum = typeBinding.getDeclaredFields().length;
-            IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
-            for (IMethodBinding item : declaredMethods) {
+            for (IMethodBinding item : typeBinding.getDeclaredMethods()) {
                 if (item.isDefaultConstructor()) {
                     continue;
                 }
-                ITypeBinding[] parameterTypes = item.getParameterTypes();
-                int parametersNum = parameterTypes.length;
-                if (item.getName().equals(className)) {
-                    if (kind == ConstructorKind.NOARGCONSTRUCTOR && parametersNum == 0) {
+                int parametersNum = item.getParameterTypes().length;
+                if (item.getName().equals(typeBinding.getName())) {
+                    if (kind == ConstructorKind.NO_ARG && parametersNum == 0) {
                         ASTNode node = astRoot.findDeclaringNode(item);
                         rewriter.replace(node, null, null);
                         break;
-                    }
-                    if (kind == ConstructorKind.ALLARGSCONSTRUCTOR && parametersNum == fieldsNum) {
+                    } else if (kind == ConstructorKind.ALL_ARGS && parametersNum == nonStaticFieldLength) {
                         ASTNode node = astRoot.findDeclaringNode(item);
                         rewriter.replace(node, null, null);
                         break;
@@ -70,26 +71,21 @@ public class ConstructorHandler {
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
         CheckConstructorsResponse response = GenerateConstructorsHandler.checkConstructorStatus(type, params.getRange(),
                 monitor);
-        if (response.constructors.length == 0 || response.constructors == null) {
+        if (response.constructors.length == 0) {
             return null;
         }
-        LspMethodBinding[] constructors = { response.constructors[0] };
         LspVariableBinding[] fields = new LspVariableBinding[] {};
-        switch (kind) {
-            case NOARGCONSTRUCTOR:
-                break;
-            case ALLARGSCONSTRUCTOR:
-                fields = response.fields;
-                break;
+        if (kind == ConstructorKind.ALL_ARGS) {
+            fields = response.fields;
         }
         Preferences preferences = JavaLanguageServerPlugin.getPreferencesManager().getPreferences();
         CodeGenerationSettings settings = new CodeGenerationSettings();
         settings.createComments = preferences.isCodeGenerationTemplateGenerateComments();
-        return GenerateConstructorsHandler.generateConstructors(type, constructors, fields, settings, null, monitor);
+        return GenerateConstructorsHandler.generateConstructors(type, response.constructors, fields, settings, null, monitor);
     }
 
     public enum ConstructorKind {
-        NOARGCONSTRUCTOR(0), ALLARGSCONSTRUCTOR(1);
+        NO_ARG(0), ALL_ARGS(1);
 
         private final int value;
 
@@ -101,6 +97,4 @@ public class ConstructorHandler {
             return value;
         }
     }
-
-    private static final String[] annotationKind = { "NoArgsConstructor", "AllArgsConstructor" };
 }

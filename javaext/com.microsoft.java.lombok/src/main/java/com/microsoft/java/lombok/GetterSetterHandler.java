@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.Flags;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IField;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
@@ -32,6 +31,7 @@ import org.eclipse.jdt.internal.corext.codemanipulation.StubUtility2Core;
 import org.eclipse.jdt.internal.corext.dom.ASTNodes;
 import org.eclipse.jdt.internal.corext.util.CodeFormatterUtil;
 import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
+import org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation;
 import org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.AccessorField;
 import org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.AccessorKind;
 import org.eclipse.jdt.ls.core.internal.handlers.CodeGenerationUtils;
@@ -53,7 +53,6 @@ public class GetterSetterHandler {
 
             final ICompilationUnit unit = type.getCompilationUnit();
             CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(unit, CoreASTProvider.WAIT_YES, monitor);
-            IJavaElement insertPosition = CodeGenerationUtils.findInsertElement(type, null);
             final ASTRewrite astRewrite = ASTRewrite.create(astRoot.getAST());
             ListRewrite listRewriter = null;
             if (type.isAnonymous()) {
@@ -78,7 +77,8 @@ public class GetterSetterHandler {
                 return null;
             }
 
-            ASTNode insertion = StubUtility2Core.getNodeToInsertBefore(listRewriter, insertPosition);
+            ASTNode insertion = StubUtility2Core.getNodeToInsertBefore(listRewriter,
+                    CodeGenerationUtils.findInsertElement(type, null));
             for (AccessorField accessor : accessors) {
                 generateGetterSetterMethods(type, listRewriter, accessor, insertion);
             }
@@ -105,6 +105,8 @@ public class GetterSetterHandler {
         }
     }
 
+    // See:
+    // org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.insertMethod
     private static void insertMethod(IField field, ListRewrite rewrite, AccessorKind kind, ASTNode insertion)
             throws CoreException {
         IType type = field.getDeclaringType();
@@ -132,8 +134,10 @@ public class GetterSetterHandler {
         }
     }
 
-    public static AccessorField[] getimplementedAccessors(IType type, AccessorKind kind) throws JavaModelException {
-        if (type == null || type.isAnnotation() || type.isInterface() || type.getCompilationUnit() == null) {
+    // See:
+    // org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.getUnimplementedAccessors
+    public static AccessorField[] getImplementedAccessors(IType type, AccessorKind kind) throws JavaModelException {
+        if (!GenerateGetterSetterOperation.supportsGetterSetter(type)) {
             return new AccessorField[0];
         }
         List<AccessorField> implemented = new ArrayList<>();

@@ -9,7 +9,6 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.manipulation.CoreASTProvider;
 import org.eclipse.jdt.internal.corext.dom.ASTNodes;
@@ -39,12 +38,12 @@ public class DataHandler {
 
         TextEdit textEdit = new MultiTextEdit();
         TextEdit allArgsConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor,
-                ConstructorKind.ALLARGSCONSTRUCTOR);
+                ConstructorKind.ALL_ARGS);
         if (allArgsConstructorTextEdit != null) {
             textEdit.addChild(allArgsConstructorTextEdit);
         }
         TextEdit noArgConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor,
-                ConstructorKind.NOARGCONSTRUCTOR);
+                ConstructorKind.NO_ARG);
         if (noArgConstructorTextEdit != null) {
             textEdit.addChild(noArgConstructorTextEdit);
         }
@@ -75,18 +74,15 @@ public class DataHandler {
             if (typeBinding == null) {
                 return;
             }
-
             Set<String> dataMethods = new HashSet<String>(Arrays.asList(lombokCanEqualMethod, lombokEqualsMethod,
                     lombokHashCodeMethod, lombokToStringMethod));
-            String className = typeBinding.getName();
-            dataMethods.add(className);
-            AccessorField[] accessors = GetterSetterHandler.getimplementedAccessors(type, AccessorKind.BOTH);
-            for (AccessorField accessor : accessors) {
+            // Add constructors
+            dataMethods.add(typeBinding.getName());
+            // Add accessors
+            for (AccessorField accessor : GetterSetterHandler.getImplementedAccessors(type, AccessorKind.BOTH)) {
                 IField field = type.getField(accessor.fieldName);
-                String getterName = GetterSetterUtil.getGetterName(field, null);
-                String setterName = GetterSetterUtil.getSetterName(field, null);
-                dataMethods.add(getterName);
-                dataMethods.add(setterName);
+                dataMethods.add(GetterSetterUtil.getGetterName(field, null));
+                dataMethods.add(GetterSetterUtil.getSetterName(field, null));
             }
             IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
             for (IMethodBinding item : declaredMethods) {
@@ -94,9 +90,7 @@ public class DataHandler {
                     continue;
                 }
                 if (dataMethods.contains(item.getName())) {
-                    item.getName();
-                    ASTNode node = astRoot.findDeclaringNode(item);
-                    rewriter.replace(node, null, null);
+                    rewriter.remove(astRoot.findDeclaringNode(item), null);
                 }
             }
         } catch (Exception e) {

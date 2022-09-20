@@ -1,9 +1,7 @@
 package com.microsoft.java.lombok;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -24,8 +22,7 @@ public class ToStringHandler {
     public static TextEdit generateToString(CodeActionParams params, IProgressMonitor monitor) {
         CheckToStringResponse response = GenerateToStringHandler.checkToStringStatus(params);
         IType type = SourceAssistProcessor.getSelectionType(params);
-        IJavaElement insertPosition = CodeGenerationUtils.findInsertElement(type, null);
-        return GenerateToStringHandler.generateToString(type, response.fields, insertPosition, monitor);
+        return GenerateToStringHandler.generateToString(type, response.fields, CodeGenerationUtils.findInsertElement(type, null), monitor);
     }
 
     public static void removeMethods(IType type, ListRewrite rewriter, IProgressMonitor monitor) {
@@ -43,9 +40,7 @@ public class ToStringHandler {
             IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
             for (IMethodBinding item : declaredMethods) {
                 if (item.getName().equals(lombokToStringMethod)) {
-                    item.getName();
-                    ASTNode node = astRoot.findDeclaringNode(item);
-                    rewriter.replace(node, null, null);
+                    rewriter.remove(astRoot.findDeclaringNode(item), null);
                 }
             }
         } catch (Exception e) {

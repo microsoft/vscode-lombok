@@ -69,7 +69,7 @@
     },
     "dependencies": {
         "jsonic": "^0.3.1",
-        "vscode-extension-telemetry-wrapper": "^0.13.1",
+        "vscode-extension-telemetry-wrapper": "^0.13.2",
         "vscode-languageclient": "7.1.0-next.5"
     }
 }

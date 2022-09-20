@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -30,12 +29,10 @@ public class EqualsAndHashCodeHandler {
         CheckHashCodeEqualsResponse response = HashCodeEqualsHandler.checkHashCodeEqualsStatus(params);
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
         Preferences preferences = JavaLanguageServerPlugin.getPreferencesManager().getPreferences();
-        boolean useJava7Objects = preferences.isHashCodeEqualsTemplateUseJava7Objects();
-        boolean useInstanceof = preferences.isHashCodeEqualsTemplateUseInstanceof();
-        boolean useBlocks = preferences.isCodeGenerationTemplateUseBlocks();
-        boolean generateComments = preferences.isCodeGenerationTemplateGenerateComments();
-        return HashCodeEqualsHandler.generateHashCodeEqualsTextEdit(type, response.fields, true, useJava7Objects,
-                useInstanceof, useBlocks, generateComments, params.getRange(), monitor);
+        return HashCodeEqualsHandler.generateHashCodeEqualsTextEdit(type, response.fields, true,
+                preferences.isHashCodeEqualsTemplateUseJava7Objects(),
+                preferences.isHashCodeEqualsTemplateUseInstanceof(), preferences.isCodeGenerationTemplateUseBlocks(),
+                preferences.isCodeGenerationTemplateGenerateComments(), params.getRange(), monitor);
     }
 
     public static void removeMethods(IType type, ListRewrite rewriter, IProgressMonitor monitor) {
@@ -52,12 +49,9 @@ public class EqualsAndHashCodeHandler {
 
             Set<String> dataMethods = new HashSet<String>(
                     Arrays.asList(lombokCanEqualMethod, lombokEqualsMethod, lombokHashCodeMethod));
-            IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
-            for (IMethodBinding item : declaredMethods) {
+            for (IMethodBinding item : typeBinding.getDeclaredMethods()) {
                 if (dataMethods.contains(item.getName())) {
-                    item.getName();
-                    ASTNode node = astRoot.findDeclaringNode(item);
-                    rewriter.replace(node, null, null);
+                    rewriter.remove(astRoot.findDeclaringNode(item), null);
                 }
             }
         } catch (Exception e) {

@@ -1,3 +1,4 @@
+'use strict';
 
 import {
     CodeActionParams,
@@ -9,6 +10,6 @@ export interface AnnotationResponse {
 
 export interface LombokRequestParams {
     context: CodeActionParams;
-    lombokAnnotations: string[];
-    delombokAnnotations: string[];
+    annotationsToLombok: string[];
+    annotationsToDelombok: string[];
 }

@@ -12,16 +12,11 @@ import com.microsoft.java.lombok.JavaCodeActionHandler.LombokRequestParams;
 public class JavaLombokDelegateCommandHandler implements IDelegateCommandHandler {
     public static final String JAVA_CODEACTION_LOMBOK_ANNOTATIONS = "java.codeAction.lombok.getAnnotations";
     public static final String JAVA_CODEACTION_LOMBOK = "java.codeAction.lombok";
-    public static final String JAVA_CODEACTION_SELECTANNOTATION = "java.codeAction.selectAnnotation";
     IProgressMonitor monitor;
 
     @Override
     public Object executeCommand(String commandId, List<Object> arguments, IProgressMonitor progress) throws Exception {
         switch (commandId) {
-            case JAVA_CODEACTION_SELECTANNOTATION:
-                CodeActionParams getSelectAnnotationParams = JSONUtility.toModel(arguments.get(0),
-                        CodeActionParams.class);
-                return AnnotationHandler.getSelectAnnotationResponse(getSelectAnnotationParams, monitor);
             case JAVA_CODEACTION_LOMBOK_ANNOTATIONS:
                 CodeActionParams getAnnotationsParams = JSONUtility.toModel(arguments.get(0), CodeActionParams.class);
                 return AnnotationHandler.findLombokAnnotation(getAnnotationsParams, monitor);

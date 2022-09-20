@@ -1,5 +1,6 @@
+'use strict';
 
-import { commands, ExtensionContext, window, workspace, CodeActionProvider, CancellationToken, CodeAction, CodeActionContext, Command, ProviderResult, Range, Selection, TextDocument, TextEditorRevealType, CodeActionProviderMetadata, CodeActionKind, ThemeIcon, Uri, env, Disposable, QuickPickItem, QuickPickItemKind } from "vscode";
+import { commands, window, workspace, CodeActionProvider, CancellationToken, CodeAction, CodeActionContext, Command, ProviderResult, Range, Selection, TextDocument, TextEditorRevealType, CodeActionProviderMetadata, CodeActionKind, ThemeIcon, Uri, env, Disposable, QuickPickItem, QuickPickItemKind } from "vscode";
 import { Commands, executeJavaLanguageServerCommand } from './commands';
 import * as ProtocolConverter from "vscode-languageclient/lib/common/protocolConverter";
 import * as CodeConverter from "vscode-languageclient/lib/common/codeConverter";
@@ -9,7 +10,7 @@ import { AnnotationResponse, LombokRequestParams } from './protocol';
 const protoConverter: ProtocolConverter.Converter = ProtocolConverter.createConverter(undefined, undefined);
 const codeConverter: CodeConverter.Converter = CodeConverter.createConverter();
 
-const allLombokAnnotations = ["Data", "NoArgsConstructor", "AllArgsConstructor", "ToString", "EqualsAndHashCode"];
+const supportedLombokAnnotations = ["Data", "NoArgsConstructor", "AllArgsConstructor", "ToString", "EqualsAndHashCode"];
 
 const annotationsDescriptions = [
     "Bundles the features of @ToString, @EqualsAndHashCode, @Getter, @Setter and @RequiredArgsConstructor together",
@@ -27,13 +28,10 @@ const annotationLinks = [
     "https://projectlombok.org/features/EqualsAndHashCode"
 ];
 
-async function applyWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<boolean> {
+async function applyWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<void> {
     const edit = protoConverter.asWorkspaceEdit(workspaceEdit);
     if (edit) {
-        return workspace.applyEdit(edit);
-    }
-    else {
-        return Promise.resolve(true);
+        await workspace.applyEdit(edit);
     }
 }
 
@@ -52,108 +50,104 @@ async function revealWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<void> 
     }
 }
 
-export function registerCodaActionCommand(context: ExtensionContext) {
-    context.subscriptions.push(commands.registerCommand(Commands.CODEACTION_LOMBOK, async (params: CodeActionParams, selectedAnnotations: string[]) => {
-        params.context.diagnostics = [];
-        let selectAnnotations = [];
-        let lombokAnnotations = [];
-        let delombokAnnotations = [];
-        if (selectedAnnotations.length > 0) {
-            delombokAnnotations = selectedAnnotations;
+export async function lombokAction(params: CodeActionParams, annotations: string[]): Promise<void> {
+    let annotationsToLombok = [];
+    let annotationsToDelombok = [];
+    if (annotations.length) {
+        annotationsToDelombok = annotations;
+    } else {
+        const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
+        if (!annotationResponse) {
+            return;
         }
-        else {
-            const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
-            if (!annotationResponse) {
-                return;
-            }
-            const annotationItems = allLombokAnnotations.map(name => {
-                return {
-                    label: `@${name}`,
-                    description: annotationsDescriptions[allLombokAnnotations.indexOf(name)],
-                    buttons: [{
-                        iconPath: new ThemeIcon("link-external"),
-                        tooltip: "Reference"
-                    }]
-                };
-            });
-            const needDelombokItems = annotationItems.filter((item) => {
-                return annotationResponse.annotations.indexOf(item.label.split('@')[1]) >= 0;
-            });
-            const needLombokItems = annotationItems.filter((item) => {
-                return annotationResponse.annotations.indexOf(item.label.split('@')[1]) < 0;
-            });
-            let showItems = [];
-            showItems.push({
-                label: "Unselect to Delombok",
-                kind: QuickPickItemKind.Separator
-            });
-            showItems = showItems.concat(needDelombokItems);
-            showItems.push({
-                label: "Select to Lombok",
-                kind: QuickPickItemKind.Separator
-            });
-            showItems = showItems.concat(needLombokItems);
+        const annotationItems = supportedLombokAnnotations.map(name => {
+            return {
+                label: `@${name}`,
+                description: annotationsDescriptions[supportedLombokAnnotations.indexOf(name)],
+                buttons: [{
+                    iconPath: new ThemeIcon("link-external"),
+                    tooltip: "Reference"
+                }]
+            };
+        });
+        const needDelombokItems = annotationItems.filter((item) => {
+            return annotationResponse.annotations.indexOf(item.label.split('@')[1]) >= 0;
+        });
+        const needLombokItems = annotationItems.filter((item) => {
+            return annotationResponse.annotations.indexOf(item.label.split('@')[1]) < 0;
+        });
+        const showItems: QuickPickItem[] = [];
+        showItems.push({
+            label: "Unselect to Delombok",
+            kind: QuickPickItemKind.Separator
+        });
+        showItems.push(...needDelombokItems);
+        showItems.push({
+            label: "Select to Lombok",
+            kind: QuickPickItemKind.Separator
+        });
+        showItems.push(...needLombokItems);
 
-            const disposables: Disposable[] = [];
-            const selectItems = await new Promise<readonly QuickPickItem[]>(async (resolve, reject) => {
+        let selectedItems: readonly QuickPickItem[] = [];
+        const disposables: Disposable[] = [];
+        try {
+            selectedItems = await new Promise<readonly QuickPickItem[]>(async (resolve, reject) => {
                 const pickBox = window.createQuickPick();
                 pickBox.items = showItems;
                 pickBox.canSelectMany = true;
                 pickBox.ignoreFocusOut = true;
                 pickBox.selectedItems = needDelombokItems;
                 pickBox.placeholder = 'Select to Lombok or Unselect to Delombok';
-
                 disposables.push(
                     pickBox.onDidTriggerItemButton(e => {
-                        const annotation = e.item.label.split('@')[1];
-                        env.openExternal(Uri.parse(annotationLinks[allLombokAnnotations.indexOf(annotation)]));
+                        env.openExternal(Uri.parse(annotationLinks[supportedLombokAnnotations.indexOf(e.item.label.split('@')[1])]));
                     }),
                     pickBox.onDidAccept(() => {
                         resolve(pickBox.selectedItems);
                     }),
                     pickBox.onDidHide(() => {
-                        resolve(pickBox.selectedItems);
+                        reject();
                     })
                 );
                 disposables.push(pickBox);
                 pickBox.show();
             });
+        } finally {
             disposables.forEach(d => d.dispose());
-
-            selectAnnotations = selectItems.map(item => {
-                return item.label.split('@')[1];
-            });
-
-            delombokAnnotations = annotationResponse.annotations.filter((item) => {
-                return selectAnnotations.indexOf(item) < 0;
-            });
-            lombokAnnotations = selectAnnotations.filter((item) => {
-                return annotationResponse.annotations.indexOf(item) < 0;
-            });
         }
-        if (delombokAnnotations.length === 0 && lombokAnnotations.length === 0) {
-            return;
-        }
-        const delombokParams: LombokRequestParams = {
-            context: params,
-            lombokAnnotations,
-            delombokAnnotations
-        };
-        const workspaceEdit = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK, JSON.stringify(delombokParams)) as WorkspaceEdit;
-        await applyWorkspaceEdit(workspaceEdit);
-        await revealWorkspaceEdit(workspaceEdit);
-    }));
+
+        const selectedAnnotations = selectedItems.map(item => {
+            return item.label.split('@')[1];
+        });
+
+        annotationsToDelombok = annotationResponse.annotations.filter((item) => {
+            return selectedAnnotations.indexOf(item) < 0;
+        });
+        annotationsToLombok = selectedAnnotations.filter((item) => {
+            return annotationResponse.annotations.indexOf(item) < 0;
+        });
+    }
+    if (!annotationsToDelombok.length && !annotationsToLombok.length) {
+        return;
+    }
+    const delombokParams: LombokRequestParams = {
+        context: params,
+        annotationsToLombok,
+        annotationsToDelombok
+    };
+    const workspaceEdit = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK, JSON.stringify(delombokParams)) as WorkspaceEdit;
+    await applyWorkspaceEdit(workspaceEdit);
+    await revealWorkspaceEdit(workspaceEdit);
+    // organize imports silently to fix missing annotation imports
+    await commands.executeCommand(Commands.ORGANIZE_IMPORTS_SILENTLY, params.textDocument.uri.toString());
 }
 
-function getSelectAnnotations(text: string): string[] {
-    const annotations = allLombokAnnotations.filter((item) => {
-        return text.indexOf(`@${item}`) >= 0;
-    });
-    return annotations;
+function getSelectedAnnotations(text: string): string[] {
+    return supportedLombokAnnotations.filter((item) => text.includes(`@${item}`));
 }
 
 export class LombokCodeActionProvider implements CodeActionProvider {
-    provideCodeActions(document: TextDocument, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<(CodeAction | Command)[]> {
+    provideCodeActions(document: TextDocument, range: Range | Selection, context: CodeActionContext, _token: CancellationToken): ProviderResult<(CodeAction | Command)[]> {
         const params: CodeActionParams = {
             textDocument: codeConverter.asTextDocumentIdentifier(document),
             range: codeConverter.asRange(range),
@@ -161,11 +155,13 @@ export class LombokCodeActionProvider implements CodeActionProvider {
         };
         const selectText = document.getText(range);
         let codeActionTitle = "Lombok...";
-        let selectAnnotations = [];
+        let selectedAnnotations = [];
         if (selectText !== "") {
-            selectAnnotations = getSelectAnnotations(selectText);
-            if (selectAnnotations.length > 0){
-                codeActionTitle = "Delombok";
+            selectedAnnotations = getSelectedAnnotations(selectText);
+            if (selectedAnnotations.length === 1) {
+                codeActionTitle = `Delombok '${selectedAnnotations[0]}'`;
+            } else if (selectedAnnotations.length > 1) {
+                codeActionTitle = `Delombok ${selectedAnnotations.length} annotations`;
             }
         }
 
@@ -176,7 +172,7 @@ export class LombokCodeActionProvider implements CodeActionProvider {
                 command: {
                     title: codeActionTitle,
                     command: Commands.CODEACTION_LOMBOK,
-                    arguments: [params, selectAnnotations]
+                    arguments: [params, selectedAnnotations]
                 },
             }
         ];

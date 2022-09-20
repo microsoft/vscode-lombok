@@ -3,9 +3,8 @@
 <plugin>
     <extension point="org.eclipse.jdt.ls.core.delegateCommandHandler">
         <delegateCommandHandler class="com.microsoft.java.lombok.JavaLombokDelegateCommandHandler">
-              <command id='java.codeAction.lombok.getAnnotations'/>
-              <command id='java.codeAction.lombok'/>
-              <command id='java.codeAction.selectAnnotation'/>
-         </delegateCommandHandler>
+            <command id='java.codeAction.lombok.getAnnotations'/>
+            <command id='java.codeAction.lombok'/>
+        </delegateCommandHandler>
      </extension>
 </plugin>
