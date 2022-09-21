@@ -1,22 +1,10 @@
 package com.microsoft.java.lombok;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
-import org.eclipse.jdt.core.manipulation.CoreASTProvider;
-import org.eclipse.jdt.internal.corext.codemanipulation.GetterSetterUtil;
-import org.eclipse.jdt.internal.corext.dom.ASTNodes;
-import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
-import org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.AccessorField;
 import org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.AccessorKind;
 import org.eclipse.jdt.ls.core.internal.text.correction.SourceAssistProcessor;
 import org.eclipse.lsp4j.CodeActionParams;
@@ -27,7 +15,7 @@ import com.microsoft.java.lombok.ConstructorHandler.ConstructorKind;
 
 public class DataHandler {
 
-    public static TextEdit generateDataTextEdit(CodeActionParams params, List<String> existingAnnotations,
+    public static TextEdit generateMethods(CodeActionParams params, List<String> existingAnnotations,
             IProgressMonitor monitor) {
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
         if (type == null || type.getCompilationUnit() == null) {
@@ -36,7 +24,7 @@ public class DataHandler {
 
         TextEdit textEdit = new MultiTextEdit();
         if (!existingAnnotations.contains(AnnotationHandler.lombokAllArgsConstructorAnnotation)) {
-            TextEdit allArgsConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor,
+            TextEdit allArgsConstructorTextEdit = ConstructorHandler.generateMethods(params, monitor,
                     ConstructorKind.ALL_ARGS);
             if (allArgsConstructorTextEdit != null) {
                 textEdit.addChild(allArgsConstructorTextEdit);
@@ -44,27 +32,42 @@ public class DataHandler {
         }
 
         if (!existingAnnotations.contains(AnnotationHandler.lombokNoArgsConstructorAnnotation)) {
-            TextEdit noArgConstructorTextEdit = ConstructorHandler.generateConstructor(params, monitor,
+            TextEdit noArgConstructorTextEdit = ConstructorHandler.generateMethods(params, monitor,
                     ConstructorKind.NO_ARG);
             if (noArgConstructorTextEdit != null) {
                 textEdit.addChild(noArgConstructorTextEdit);
             }
         }
 
-        TextEdit accessorsTextEdit = GetterSetterHandler.generateGetterSetter(params, monitor);
-        if (accessorsTextEdit != null) {
-            textEdit.addChild(accessorsTextEdit);
+        // check existing annotations and use reverse logics to get AccessorKind
+        AccessorKind kind = null;
+        boolean getterExists = existingAnnotations.contains(AnnotationHandler.lombokGetterAnnotation);
+        boolean setterExists = existingAnnotations.contains(AnnotationHandler.lombokSetterAnnotation);
+        if (getterExists && setterExists) {
+            kind = null;
+        } else if (getterExists) {
+            kind = AccessorKind.SETTER;
+        } else if (setterExists) {
+            kind = AccessorKind.GETTER;
+        } else {
+            kind = AccessorKind.BOTH;
+        }
+        if (kind != null) {
+            TextEdit accessorsTextEdit = GetterSetterHandler.generateMethods(params, kind, monitor);
+            if (accessorsTextEdit != null) {
+                textEdit.addChild(accessorsTextEdit);
+            }
         }
 
         if (!existingAnnotations.contains(AnnotationHandler.lombokToStringAnnotation)) {
-            TextEdit toStringTextEdit = ToStringHandler.generateToString(params, monitor);
+            TextEdit toStringTextEdit = ToStringHandler.generateMethods(params, monitor);
             if (toStringTextEdit != null) {
                 textEdit.addChild(toStringTextEdit);
             }
         }
 
         if (!existingAnnotations.contains(AnnotationHandler.lombokEqualsAndHashCodeAnnotation)) {
-            TextEdit hashCodeEqualsTextEdit = EqualsAndHashCodeHandler.generateHashCodeEquals(params, monitor);
+            TextEdit hashCodeEqualsTextEdit = EqualsAndHashCodeHandler.generateMethods(params, monitor);
             if (hashCodeEqualsTextEdit != null) {
                 textEdit.addChild(hashCodeEqualsTextEdit);
             }
@@ -74,39 +77,11 @@ public class DataHandler {
     }
 
     public static void removeMethods(IType type, ListRewrite rewriter, IProgressMonitor monitor) {
-        try {
-            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
-                    CoreASTProvider.WAIT_YES, monitor);
-            if (astRoot == null) {
-                return;
-            }
-            ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
-            if (typeBinding == null) {
-                return;
-            }
-            // Add constructors
-            Set<String> dataMethods = new HashSet<String>(Arrays.asList(typeBinding.getName()));
-            // Add accessors
-            for (AccessorField accessor : GetterSetterHandler.getImplementedAccessors(type, AccessorKind.BOTH)) {
-                IField field = type.getField(accessor.fieldName);
-                dataMethods.add(GetterSetterUtil.getGetterName(field, null));
-                dataMethods.add(GetterSetterUtil.getSetterName(field, null));
-            }
-            IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
-            for (IMethodBinding item : declaredMethods) {
-                if (item.isDefaultConstructor()) {
-                    continue;
-                }
-                if (dataMethods.contains(item.getName())) {
-                    rewriter.remove(astRoot.findDeclaringNode(item), null);
-                }
-            }
-            // TODO: cache calculated binding
-            Utils.removeMethods(type, rewriter, ToStringHandler.toStringMethods, monitor);
-            Utils.removeMethods(type, rewriter, EqualsAndHashCodeHandler.equalsAndHashCodeMethods, monitor);
-        } catch (Exception e) {
-            JavaLanguageServerPlugin.logException("Remove Lombok @Data methods", e);
-        }
-        return;
+        // TODO: cache calculated binding
+        ConstructorHandler.removeMethods(type, rewriter, ConstructorKind.NO_ARG, monitor);
+        ConstructorHandler.removeMethods(type, rewriter, ConstructorKind.ALL_ARGS, monitor);
+        GetterSetterHandler.removeMethods(type, rewriter, AccessorKind.BOTH, monitor);
+        Utils.removeMethods(type, rewriter, ToStringHandler.toStringMethods, monitor);
+        Utils.removeMethods(type, rewriter, EqualsAndHashCodeHandler.equalsAndHashCodeMethods, monitor);
     }
 }

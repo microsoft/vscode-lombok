@@ -10,12 +10,14 @@ import { AnnotationResponse, LombokRequestParams } from './protocol';
 const protoConverter: ProtocolConverter.Converter = ProtocolConverter.createConverter(undefined, undefined);
 const codeConverter: CodeConverter.Converter = CodeConverter.createConverter();
 
-const supportedLombokAnnotations = ["Data", "NoArgsConstructor", "AllArgsConstructor", "ToString", "EqualsAndHashCode"];
+const supportedLombokAnnotations = ["Data", "NoArgsConstructor", "AllArgsConstructor", "Getter", "Setter", "ToString", "EqualsAndHashCode"];
 
 const annotationsDescriptions = [
     "Bundles the features of @ToString, @EqualsAndHashCode, @Getter, @Setter and @RequiredArgsConstructor together",
-    "Generate a constructor with no parameters.",
+    "Generates a constructor with no parameters.",
     "Generates a constructor with 1 parameter for each field in your class.",
+    "Generates the default getter automatically.",
+    "Generates the default setter automatically.",
     "Generates a toString for you.",
     "Generates hashCode and equals implementations from the fields of your object."
 ];
@@ -24,6 +26,8 @@ const annotationLinks = [
     "https://projectlombok.org/features/Data",
     "https://projectlombok.org/features/constructor",
     "https://projectlombok.org/features/constructor",
+    "https://projectlombok.org/features/GetterSetter",
+    "https://projectlombok.org/features/GetterSetter",
     "https://projectlombok.org/features/ToString",
     "https://projectlombok.org/features/EqualsAndHashCode"
 ];

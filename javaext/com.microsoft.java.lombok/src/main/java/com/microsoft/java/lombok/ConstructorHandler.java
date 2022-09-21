@@ -59,10 +59,9 @@ public class ConstructorHandler {
         } catch (Exception e) {
             JavaLanguageServerPlugin.logException("Remove Lombok method", e);
         }
-        return;
     }
 
-    public static TextEdit generateConstructor(CodeActionParams params, IProgressMonitor monitor,
+    public static TextEdit generateMethods(CodeActionParams params, IProgressMonitor monitor,
             ConstructorKind kind) {
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
         CheckConstructorsResponse response = GenerateConstructorsHandler.checkConstructorStatus(type, params.getRange(),

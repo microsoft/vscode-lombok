@@ -25,6 +25,7 @@ import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.core.manipulation.CoreASTProvider;
 import org.eclipse.jdt.core.refactoring.CompilationUnitChange;
 import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
+import org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.AccessorKind;
 import org.eclipse.jdt.ls.core.internal.text.correction.SourceAssistProcessor;
 import org.eclipse.jdt.internal.corext.dom.ASTNodes;
 import org.eclipse.jdt.internal.corext.refactoring.structure.CompilationUnitRewrite;
@@ -82,7 +83,7 @@ public class JavaCodeActionHandler {
         TextEdit textEdit = new MultiTextEdit();
 
         if (annotations.contains(AnnotationHandler.lombokDataAnnotation)) {
-            TextEdit delombokDataEdit = DataHandler.generateDataTextEdit(params, annotationsAfter, monitor);
+            TextEdit delombokDataEdit = DataHandler.generateMethods(params, annotationsAfter, monitor);
             if (delombokDataEdit != null) {
                 textEdit.addChild(delombokDataEdit);
             }
@@ -90,37 +91,50 @@ public class JavaCodeActionHandler {
             // and @EqualsAndHashCode, we don't need to process them.
             annotations.remove(AnnotationHandler.lombokNoArgsConstructorAnnotation);
             annotations.remove(AnnotationHandler.lombokAllArgsConstructorAnnotation);
+            annotations.remove(AnnotationHandler.lombokGetterAnnotation);
+            annotations.remove(AnnotationHandler.lombokSetterAnnotation);
             annotations.remove(AnnotationHandler.lombokToStringAnnotation);
             annotations.remove(AnnotationHandler.lombokEqualsAndHashCodeAnnotation);
         }
 
-        if (annotations.contains(AnnotationHandler.lombokNoArgsConstructorAnnotation) && !annotationsAfter.contains(AnnotationHandler.lombokDataAnnotation)) {
-            TextEdit delombokNoArgsConstructorEdit = ConstructorHandler.generateConstructor(params, monitor,
-                    ConstructorKind.NO_ARG);
-            if (delombokNoArgsConstructorEdit != null) {
-                textEdit.addChild(delombokNoArgsConstructorEdit);
+        if (!annotationsAfter.contains(AnnotationHandler.lombokDataAnnotation)) {
+            // only add methods when @Data is not exist
+            if (annotations.contains(AnnotationHandler.lombokNoArgsConstructorAnnotation)) {
+                TextEdit delombokNoArgsConstructorEdit = ConstructorHandler.generateMethods(params, monitor,
+                        ConstructorKind.NO_ARG);
+                if (delombokNoArgsConstructorEdit != null) {
+                    textEdit.addChild(delombokNoArgsConstructorEdit);
+                }
             }
-        }
 
-        if (annotations.contains(AnnotationHandler.lombokAllArgsConstructorAnnotation) && !annotationsAfter.contains(AnnotationHandler.lombokDataAnnotation)) {
-            TextEdit delombokAllArgsConstructorEdit = ConstructorHandler.generateConstructor(params, monitor,
-                    ConstructorKind.ALL_ARGS);
-            if (delombokAllArgsConstructorEdit != null) {
-                textEdit.addChild(delombokAllArgsConstructorEdit);
+            if (annotations.contains(AnnotationHandler.lombokAllArgsConstructorAnnotation)) {
+                TextEdit delombokAllArgsConstructorEdit = ConstructorHandler.generateMethods(params, monitor,
+                        ConstructorKind.ALL_ARGS);
+                if (delombokAllArgsConstructorEdit != null) {
+                    textEdit.addChild(delombokAllArgsConstructorEdit);
+                }
             }
-        }
 
-        if (annotations.contains(AnnotationHandler.lombokToStringAnnotation) && !annotationsAfter.contains(AnnotationHandler.lombokDataAnnotation)) {
-            TextEdit delombokToStringEdit = ToStringHandler.generateToString(params, monitor);
-            if (delombokToStringEdit != null) {
-                textEdit.addChild(delombokToStringEdit);
+            AccessorKind kind = Utils.getAccessorKindFromAnnotations(annotations);
+            if (kind != null) {
+                TextEdit delombokAccessorsEdit = GetterSetterHandler.generateMethods(params, kind, monitor);
+                if (delombokAccessorsEdit != null) {
+                    textEdit.addChild(delombokAccessorsEdit);
+                }
             }
-        }
 
-        if (annotations.contains(AnnotationHandler.lombokEqualsAndHashCodeAnnotation) && !annotationsAfter.contains(AnnotationHandler.lombokDataAnnotation)) {
-            TextEdit delombokHashCodeEqualsEdit = EqualsAndHashCodeHandler.generateHashCodeEquals(params, monitor);
-            if (delombokHashCodeEqualsEdit != null) {
-                textEdit.addChild(delombokHashCodeEqualsEdit);
+            if (annotations.contains(AnnotationHandler.lombokToStringAnnotation)) {
+                TextEdit delombokToStringEdit = ToStringHandler.generateMethods(params, monitor);
+                if (delombokToStringEdit != null) {
+                    textEdit.addChild(delombokToStringEdit);
+                }
+            }
+
+            if (annotations.contains(AnnotationHandler.lombokEqualsAndHashCodeAnnotation)) {
+                TextEdit delombokHashCodeEqualsEdit = EqualsAndHashCodeHandler.generateMethods(params, monitor);
+                if (delombokHashCodeEqualsEdit != null) {
+                    textEdit.addChild(delombokHashCodeEqualsEdit);
+                }
             }
         }
         return textEdit;
@@ -198,6 +212,12 @@ public class JavaCodeActionHandler {
             }
             if (annotations.contains(AnnotationHandler.lombokAllArgsConstructorAnnotation)) {
                 ConstructorHandler.removeMethods(type, rewriter, ConstructorKind.ALL_ARGS, monitor);
+            }
+            if (annotations.contains(AnnotationHandler.lombokGetterAnnotation)) {
+                GetterSetterHandler.removeMethods(type, rewriter, AccessorKind.GETTER, monitor);
+            }
+            if (annotations.contains(AnnotationHandler.lombokSetterAnnotation)) {
+                GetterSetterHandler.removeMethods(type, rewriter, AccessorKind.SETTER, monitor);
             }
             if (annotations.contains(AnnotationHandler.lombokToStringAnnotation)) {
                 ToStringHandler.removeMethods(type, rewriter, monitor);

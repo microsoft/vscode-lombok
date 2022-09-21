@@ -1,5 +1,6 @@
 package com.microsoft.java.lombok;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -12,6 +13,7 @@ import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.core.manipulation.CoreASTProvider;
 import org.eclipse.jdt.internal.corext.dom.ASTNodes;
 import org.eclipse.jdt.ls.core.internal.JavaLanguageServerPlugin;
+import org.eclipse.jdt.ls.core.internal.codemanipulation.GenerateGetterSetterOperation.AccessorKind;
 
 public class Utils {
     public static void removeMethods(IType type, ListRewrite rewriter, Map<String, String> methodsToCheck,
@@ -39,6 +41,19 @@ public class Utils {
         } catch (Exception e) {
             JavaLanguageServerPlugin.logException("Remove Lombok methods", e);
         }
-        return;
+    }
+
+    public static AccessorKind getAccessorKindFromAnnotations(List<String> annotations) {
+        boolean getterExists = annotations.contains(AnnotationHandler.lombokGetterAnnotation);
+        boolean setterExists = annotations.contains(AnnotationHandler.lombokSetterAnnotation);
+        if (getterExists && setterExists) {
+            return AccessorKind.BOTH;
+        } else if (getterExists) {
+            return AccessorKind.GETTER;
+        } else if (setterExists) {
+            return AccessorKind.SETTER;
+        } else {
+            return null;
+        }
     }
 }

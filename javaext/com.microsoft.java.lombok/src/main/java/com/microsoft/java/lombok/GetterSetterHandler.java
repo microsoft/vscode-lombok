@@ -1,8 +1,10 @@
 package com.microsoft.java.lombok;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -18,6 +20,8 @@ import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.NodeFinder;
@@ -42,10 +46,10 @@ import org.eclipse.text.edits.TextEdit;
 public class GetterSetterHandler {
     private final static int generateVisibility = Modifier.PUBLIC;
 
-    public static TextEdit generateGetterSetter(CodeActionParams params, IProgressMonitor monitor) {
+    public static TextEdit generateMethods(CodeActionParams params, AccessorKind accessorKind, IProgressMonitor monitor) {
         try {
             IType type = SourceAssistProcessor.getSelectionType(params);
-            AccessorField[] accessors = getAccessors(type, AccessorKind.BOTH);
+            AccessorField[] accessors = getAccessors(type, accessorKind);
 
             if (accessors == null || accessors.length == 0) {
                 return null;
@@ -208,6 +212,42 @@ public class GetterSetterHandler {
         } catch (JavaModelException e) {
             JavaLanguageServerPlugin.logException("Failed to resolve the accessors.", e);
             return new AccessorField[0];
+        }
+    }
+
+    public static void removeMethods(IType type, ListRewrite rewriter, AccessorKind kind, IProgressMonitor monitor) {
+        try {
+            CompilationUnit astRoot = CoreASTProvider.getInstance().getAST(type.getCompilationUnit(),
+                    CoreASTProvider.WAIT_YES, monitor);
+            if (astRoot == null) {
+                return;
+            }
+            ITypeBinding typeBinding = ASTNodes.getTypeBinding(astRoot, type);
+            if (typeBinding == null) {
+                return;
+            }
+            Set<String> methods = new HashSet<>();
+            // Add accessors
+            for (AccessorField accessor : GetterSetterHandler.getImplementedAccessors(type, AccessorKind.BOTH)) {
+                IField field = type.getField(accessor.fieldName);
+                if (kind == AccessorKind.GETTER || kind == AccessorKind.BOTH) {
+                    methods.add(GetterSetterUtil.getGetterName(field, null));
+                }
+                if (kind == AccessorKind.SETTER || kind == AccessorKind.BOTH) {
+                    methods.add(GetterSetterUtil.getSetterName(field, null));
+                }
+            }
+            IMethodBinding[] declaredMethods = typeBinding.getDeclaredMethods();
+            for (IMethodBinding item : declaredMethods) {
+                if (item.isDefaultConstructor()) {
+                    continue;
+                }
+                if (methods.contains(item.getName())) {
+                    rewriter.remove(astRoot.findDeclaringNode(item), null);
+                }
+            }
+        } catch (Exception e) {
+            JavaLanguageServerPlugin.logException("Remove Lombok @Data methods", e);
         }
     }
 }

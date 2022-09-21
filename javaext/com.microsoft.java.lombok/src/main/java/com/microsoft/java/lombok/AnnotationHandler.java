@@ -21,12 +21,15 @@ public class AnnotationHandler {
     public static final String lombokDataAnnotation = "Data";
     public static final String lombokNoArgsConstructorAnnotation = "NoArgsConstructor";
     public static final String lombokAllArgsConstructorAnnotation = "AllArgsConstructor";
+    public static final String lombokGetterAnnotation = "Getter";
+    public static final String lombokSetterAnnotation = "Setter";
     public static final String lombokToStringAnnotation = "ToString";
     public static final String lombokEqualsAndHashCodeAnnotation = "EqualsAndHashCode";
 
     public static Set<String> lombokAnnotationSet = new HashSet<String>(Arrays.asList(
             lombokDataAnnotation, lombokNoArgsConstructorAnnotation, lombokAllArgsConstructorAnnotation,
-            lombokToStringAnnotation, lombokEqualsAndHashCodeAnnotation));
+            lombokGetterAnnotation, lombokSetterAnnotation, lombokToStringAnnotation,
+            lombokEqualsAndHashCodeAnnotation));
 
     public static AnnotationResponse findLombokAnnotation(CodeActionParams params, IProgressMonitor monitor) {
         IType type = SourceAssistProcessor.getSelectionType(params);

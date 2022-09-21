@@ -25,7 +25,7 @@ public class EqualsAndHashCodeHandler {
         equalsAndHashCodeMethods.put("hashCode", "()I");
     }
 
-    public static TextEdit generateHashCodeEquals(CodeActionParams params, IProgressMonitor monitor) {
+    public static TextEdit generateMethods(CodeActionParams params, IProgressMonitor monitor) {
         CheckHashCodeEqualsResponse response = HashCodeEqualsHandler.checkHashCodeEqualsStatus(params);
         IType type = SourceAssistProcessor.getSelectionType(params, monitor);
         Preferences preferences = JavaLanguageServerPlugin.getPreferencesManager().getPreferences();

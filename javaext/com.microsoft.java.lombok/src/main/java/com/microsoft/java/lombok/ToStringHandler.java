@@ -22,7 +22,7 @@ public class ToStringHandler {
         toStringMethods.put("toString", "()Ljava.lang.String;");
     }
 
-    public static TextEdit generateToString(CodeActionParams params, IProgressMonitor monitor) {
+    public static TextEdit generateMethods(CodeActionParams params, IProgressMonitor monitor) {
         CheckToStringResponse response = GenerateToStringHandler.checkToStringStatus(params);
         IType type = SourceAssistProcessor.getSelectionType(params);
         return GenerateToStringHandler.generateToString(type, response.fields,
