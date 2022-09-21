@@ -9,4 +9,9 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.jdt.core,
  org.eclipse.jdt.core.manipulation,
- org.eclipse.jdt.ls.core
+ org.eclipse.jdt.ls.core,
+ org.eclipse.ltk.core.refactoring,
+ org.eclipse.text;bundle-version="3.6.0",
+ org.eclipse.lsp4j,
+ com.google.gson
+Bundle-ClassPath: .

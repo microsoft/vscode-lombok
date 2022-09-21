@@ -12,7 +12,10 @@
 			"runtimeExecutable": "${execPath}",
 			"args": ["--extensionDevelopmentPath=${workspaceFolder}"],
 			"outFiles": ["${workspaceFolder}/out/**/*.js"],
-			"preLaunchTask": "npm: watch"
+			"preLaunchTask": "npm: watch",
+			"env": {
+				"DEBUG_VSCODE_JAVA": "true"
+			}
 		},
 		{
 			"name": "Run Extension Tests",
@@ -25,6 +28,15 @@
 			],
 			"outFiles": ["${workspaceFolder}/out/test/**/*.js"],
 			"preLaunchTask": "npm: watch"
-		}
+		},
+		{
+			"type": "java",
+			"name": "Debug (Attach)",
+			"request": "attach",
+			"hostName": "localhost",
+			"port": 1044,
+			"timeout": 30000,
+			"projectName": "com.microsoft.java.lombok"
+		  }
 	]
 }

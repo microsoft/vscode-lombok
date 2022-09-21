@@ -13,7 +13,7 @@ async function main(): Promise<void> {
         const extensionTestsPath = path.resolve(__dirname, './suite/index');
 
         // Download VS Code and unzip it
-        const vscodeExecutablePath = await downloadAndUnzipVSCode('1.58.2');
+        const vscodeExecutablePath = await downloadAndUnzipVSCode("1.65.0");
 
         // Install vscode-java extension to downloaded vscode
         const [cli, ...args] = resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath);
