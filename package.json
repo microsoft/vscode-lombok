@@ -54,6 +54,9 @@
         "vscode:uninstall": "node ./out/uninstall-hook",
         "build-server": "node scripts/build/buildJdtlsExt.js"
     },
+    "extensionDependencies": [
+        "redhat.java"
+    ],
     "devDependencies": {
         "@types/jsonic": "^0.3.0",
         "@types/glob": "^7.1.1",

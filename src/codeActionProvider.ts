@@ -51,15 +51,16 @@ async function revealWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<void> 
 }
 
 export async function lombokAction(params: CodeActionParams, annotations: string[]): Promise<void> {
-    let annotationsToLombok = [];
-    let annotationsToDelombok = [];
+    const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
+    if (!annotationResponse) {
+        return;
+    }
+    let annotationsAfter = [];
     if (annotations.length) {
-        annotationsToDelombok = annotations;
+        annotationsAfter = annotationResponse.annotations.filter((item) => {
+            return !annotations.includes(item);
+        })
     } else {
-        const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
-        if (!annotationResponse) {
-            return;
-        }
         const annotationItems = supportedLombokAnnotations.map(name => {
             return {
                 label: `@${name}`,
@@ -70,10 +71,10 @@ export async function lombokAction(params: CodeActionParams, annotations: string
                 }]
             };
         });
-        const needDelombokItems = annotationItems.filter((item) => {
+        const itemsToDelombok = annotationItems.filter((item) => {
             return annotationResponse.annotations.indexOf(item.label.split('@')[1]) >= 0;
         });
-        const needLombokItems = annotationItems.filter((item) => {
+        const itemsToLombok = annotationItems.filter((item) => {
             return annotationResponse.annotations.indexOf(item.label.split('@')[1]) < 0;
         });
         const showItems: QuickPickItem[] = [];
@@ -81,13 +82,12 @@ export async function lombokAction(params: CodeActionParams, annotations: string
             label: "Unselect to Delombok",
             kind: QuickPickItemKind.Separator
         });
-        showItems.push(...needDelombokItems);
+        showItems.push(...itemsToDelombok);
         showItems.push({
             label: "Select to Lombok",
             kind: QuickPickItemKind.Separator
         });
-        showItems.push(...needLombokItems);
-
+        showItems.push(...itemsToLombok);
         let selectedItems: readonly QuickPickItem[] = [];
         const disposables: Disposable[] = [];
         try {
@@ -96,7 +96,7 @@ export async function lombokAction(params: CodeActionParams, annotations: string
                 pickBox.items = showItems;
                 pickBox.canSelectMany = true;
                 pickBox.ignoreFocusOut = true;
-                pickBox.selectedItems = needDelombokItems;
+                pickBox.selectedItems = itemsToDelombok;
                 pickBox.placeholder = 'Select to Lombok or Unselect to Delombok';
                 disposables.push(
                     pickBox.onDidTriggerItemButton(e => {
@@ -115,27 +115,16 @@ export async function lombokAction(params: CodeActionParams, annotations: string
         } finally {
             disposables.forEach(d => d.dispose());
         }
-
-        const selectedAnnotations = selectedItems.map(item => {
+        annotationsAfter = selectedItems.map(item => {
             return item.label.split('@')[1];
         });
-
-        annotationsToDelombok = annotationResponse.annotations.filter((item) => {
-            return selectedAnnotations.indexOf(item) < 0;
-        });
-        annotationsToLombok = selectedAnnotations.filter((item) => {
-            return annotationResponse.annotations.indexOf(item) < 0;
-        });
     }
-    if (!annotationsToDelombok.length && !annotationsToLombok.length) {
-        return;
-    }
-    const delombokParams: LombokRequestParams = {
+    const lombokParams: LombokRequestParams = {
         context: params,
-        annotationsToLombok,
-        annotationsToDelombok
+        annotationsBefore: annotationResponse.annotations,
+        annotationsAfter
     };
-    const workspaceEdit = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK, JSON.stringify(delombokParams)) as WorkspaceEdit;
+    const workspaceEdit = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK, JSON.stringify(lombokParams)) as WorkspaceEdit;
     await applyWorkspaceEdit(workspaceEdit);
     await revealWorkspaceEdit(workspaceEdit);
     // organize imports silently to fix missing annotation imports

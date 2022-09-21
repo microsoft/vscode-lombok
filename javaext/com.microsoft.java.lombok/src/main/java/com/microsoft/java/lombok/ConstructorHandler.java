@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -18,14 +17,11 @@ import org.eclipse.jdt.ls.core.internal.preferences.Preferences;
 import org.eclipse.jdt.internal.corext.codemanipulation.CodeGenerationSettings;
 import org.eclipse.jdt.ls.core.internal.handlers.GenerateConstructorsHandler;
 import org.eclipse.jdt.ls.core.internal.handlers.GenerateConstructorsHandler.CheckConstructorsResponse;
-import org.eclipse.jdt.ls.core.internal.handlers.JdtDomModels.LspMethodBinding;
 import org.eclipse.jdt.ls.core.internal.handlers.JdtDomModels.LspVariableBinding;
 import org.eclipse.jdt.ls.core.internal.text.correction.SourceAssistProcessor;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.lsp4j.CodeActionParams;
 import org.eclipse.text.edits.TextEdit;
-
-import com.microsoft.java.lombok.ConstructorHandler;
 
 public class ConstructorHandler {
     public static void removeMethods(IType type, ListRewrite rewriter, ConstructorKind kind, IProgressMonitor monitor) {

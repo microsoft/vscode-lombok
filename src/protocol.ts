@@ -10,6 +10,6 @@ export interface AnnotationResponse {
 
 export interface LombokRequestParams {
     context: CodeActionParams;
-    annotationsToLombok: string[];
-    annotationsToDelombok: string[];
+    annotationsBefore: string[];
+    annotationsAfter: string[];
 }
