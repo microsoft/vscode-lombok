@@ -51,14 +51,12 @@
         "watch": "tsc -watch -p ./",
         "package": "vsce package",
         "vscode:prepublish": "npm run compile",
-        "vscode:uninstall": "node ./out/uninstall-hook",
         "build-server": "node scripts/build/buildJdtlsExt.js"
     },
     "extensionDependencies": [
         "redhat.java"
     ],
     "devDependencies": {
-        "@types/jsonic": "^0.3.0",
         "@types/glob": "^7.1.1",
         "@types/mocha": "^9.1.1",
         "@types/node": "^14.18.21",
@@ -71,7 +69,6 @@
         "rimraf": "^3.0.1"
     },
     "dependencies": {
-        "jsonic": "^0.3.1",
         "vscode-extension-telemetry-wrapper": "^0.13.2",
         "vscode-languageclient": "7.1.0-next.5"
     }
