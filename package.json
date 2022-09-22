@@ -1,7 +1,7 @@
 {
     "name": "vscode-lombok",
     "displayName": "Lombok Annotations Support for VS Code",
-    "description": "A lightweight extension to support Lombok annotations processing in Visual Studio Code",
+    "description": "Refactor code with Lombok annotations, or remove Lombok annotations with actual methods.",
     "version": "1.0.1",
     "publisher": "vscjava",
     "icon": "images/icon.png",
