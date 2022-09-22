@@ -1,5 +1,12 @@
-trigger:
-- main
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 3 * * *"
+  displayName: Daily 3am build
+  branches:
+    include:
+    - main
 
 jobs:
   - job: static_analysis
@@ -36,12 +43,28 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+    - task: JavaToolInstaller@0
+      displayName: 'Use Java 17'
+      inputs:
+        versionSpec: 17
+        jdkArchitectureOption: x64
+        jdkSourceOption: PreInstalled
     - task: Npm@1
       displayName: 'npm install'
       inputs:
         verbose: false
-    - name: Build OSGi bundle
-      run: npm run build-server
+    - task: Npm@1
+      displayName: 'npm run build-server'
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: 'run build-server'
+    - bash: |
+        npx json@latest -I -f package.json -e "this.aiKey=\"$(AI_KEY)\""
+      displayName: Replace AI Key
+    - bash: |
+        node ./scripts/build/prepare-nightly-build.js
+      displayName: Set pre-release versions
     - script: 'npx vsce@latest package'
       displayName: 'package vsix'
     - task: CopyFiles@2
