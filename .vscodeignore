@@ -9,3 +9,7 @@ tslint.json
 **/**.vsix
 .github/**
 images/*.gif
+scripts
+javaext/**
+.azure-pipelines/**
+javaConfig.json
