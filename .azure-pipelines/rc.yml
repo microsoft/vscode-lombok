@@ -1,5 +1,5 @@
-trigger:
-- main
+trigger: none
+pr: none
 
 jobs:
   - job: static_analysis
@@ -52,6 +52,9 @@ jobs:
         command: custom
         verbose: false
         customCommand: 'run build-server'
+    - bash: |
+        npx json@latest -I -f package.json -e "this.aiKey=\"$(AI_KEY)\""
+      displayName: Replace AI Key
     - script: 'npx vsce@latest package'
       displayName: 'package vsix'
     - task: CopyFiles@2

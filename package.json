@@ -6,6 +6,7 @@
     "publisher": "vscjava",
     "icon": "images/icon.png",
     "license": "MIT",
+    "aiKey": "",
     "engines": {
         "vscode": "^1.65.0"
     },
