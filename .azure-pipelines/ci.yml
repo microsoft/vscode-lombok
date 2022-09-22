@@ -36,12 +36,22 @@ jobs:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+    - task: JavaToolInstaller@0
+      displayName: 'Use Java 17'
+      inputs:
+        versionSpec: 17
+        jdkArchitectureOption: x64
+        jdkSourceOption: PreInstalled
     - task: Npm@1
       displayName: 'npm install'
       inputs:
         verbose: false
-    - script: 'npm run build-server'
-      displayName: 'Build OSGi bundle'
+    - task: Npm@1
+      displayName: 'npm run build-server'
+      inputs:
+        command: custom
+        verbose: false
+        customCommand: 'run build-server'
     - script: 'npx vsce@latest package'
       displayName: 'package vsix'
     - task: CopyFiles@2
