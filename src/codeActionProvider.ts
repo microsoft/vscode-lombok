@@ -101,7 +101,7 @@ export async function lombokAction(params: CodeActionParams, annotations: string
                 pickBox.canSelectMany = true;
                 pickBox.ignoreFocusOut = true;
                 pickBox.selectedItems = itemsToDelombok;
-                pickBox.placeholder = 'Select to Lombok or Unselect to Delombok';
+                pickBox.placeholder = 'Add or remove Lombok annotations in class';
                 disposables.push(
                     pickBox.onDidTriggerItemButton(e => {
                         env.openExternal(Uri.parse(annotationLinks[supportedLombokAnnotations.indexOf(e.item.label.split('@')[1])]));

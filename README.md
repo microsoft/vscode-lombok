@@ -8,7 +8,9 @@
 
 https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-lombok
 
-A lightweight extension to support [Lombok](https://projectlombok.org/) annotations processing in Visual Studio Code
+A lightweight extension based on [Language Support for Java by Red Hat](https://marketplace.visualstudio.com/items?itemName=redhat.java). Provide refactoring code actions to [Lombok](https://projectlombok.org/)/Delombok annotations in your code.
+- Lombok - Refactor code with Lombok annotations.
+- Delombok - Remove annotations with actual methods.
 
 ![Screenshot](images/vscode-lombok.gif)
 
@@ -21,23 +23,12 @@ A lightweight extension to support [Lombok](https://projectlombok.org/) annotati
 Open VS Code and press `Ctrl + Shift + X` to open extension manager. Type `lombok` and click install. Reload VS Code when asked.
 
 ## Features / Supports
-
+Here are the supported annotations for lombok/delombok code actions.
 - [@Getter and @Setter](http://projectlombok.org/features/GetterSetter.html)
 - [@ToString](http://projectlombok.org/features/ToString.html)
 - [@EqualsAndHashCode](http://projectlombok.org/features/EqualsAndHashCode.html)
-- [@AllArgsConstructor, @RequiredArgsConstructor and @NoArgsConstructor](http://projectlombok.org/features/Constructor.html)
-- [@Log](http://projectlombok.org/features/Log.html)
-- [@Slf4j](https://projectlombok.org/features/log)
+- [@AllArgsConstructor and @NoArgsConstructor](http://projectlombok.org/features/Constructor.html)
 - [@Data](https://projectlombok.org/features/Data.html)
-- [@Builder](https://projectlombok.org/features/Builder.html)
-- [@Singular](https://projectlombok.org/features/Builder.html#singular)
-- [@Delegate](https://projectlombok.org/features/Delegate.html)
-- [@Value](https://projectlombok.org/features/Value.html)
-- [@Accessors](https://projectlombok.org/features/experimental/Accessors.html)
-- [@Wither](https://projectlombok.org/features/experimental/Wither.html)
-- [@SneakyThrows](https://projectlombok.org/features/SneakyThrows.html)
-- [@val](https://projectlombok.org/features/val.html)
-- [@UtilityClass](https://projectlombok.org/features/experimental/UtilityClass.html)
 
 ## Credits
 This project was originally started by [@GabrielBB](https://github.com/GabrielBB) and is now currently maintained by Microsoft. Huge thanks to [@GabrielBB](https://github.com/GabrielBB) who started it all and made this Lombok extension available.
