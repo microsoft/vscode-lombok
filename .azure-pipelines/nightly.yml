@@ -65,7 +65,7 @@ jobs:
     - bash: |
         node ./scripts/build/prepare-nightly-build.js
       displayName: Set pre-release versions
-    - script: 'npx vsce@latest package'
+    - script: 'npx vsce@latest package --pre-release'
       displayName: 'package vsix'
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
