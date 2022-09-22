@@ -40,8 +40,8 @@ jobs:
       displayName: 'npm install'
       inputs:
         verbose: false
-    - name: Build OSGi bundle
-      run: npm run build-server
+    - script: 'npm run build-server'
+      displayName: 'Build OSGi bundle'
     - script: 'npx vsce@latest package'
       displayName: 'package vsix'
     - task: CopyFiles@2
