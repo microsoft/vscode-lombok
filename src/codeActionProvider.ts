@@ -56,9 +56,6 @@ async function revealWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<void> 
 }
 
 export async function lombokAction(params: CodeActionParams, annotations: string[]): Promise<void> {
-    sendInfo("", {
-        operationName: "openLombokAction",
-    });
     const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
     if (!annotationResponse) {
         return;
@@ -120,7 +117,7 @@ export async function lombokAction(params: CodeActionParams, annotations: string
                 disposables.push(pickBox);
                 pickBox.show();
             });
-        } catch(err) {
+        } catch (err) {
             // return when the quickpick is cancelled.
             sendInfo("", {
                 operationName: "cancelLombokAction",
