@@ -1,7 +1,7 @@
 'use strict';
 
-import { commands, Disposable, Event, Extension, ExtensionContext, languages, Uri } from 'vscode';
-import { initializeFromJsonFile, dispose as disposeTelemetryWrapper, instrumentOperation } from 'vscode-extension-telemetry-wrapper';
+import { Disposable, Event, Extension, ExtensionContext, languages, Uri } from 'vscode';
+import { initializeFromJsonFile, dispose as disposeTelemetryWrapper, instrumentOperation, instrumentOperationAsVsCodeCommand } from 'vscode-extension-telemetry-wrapper';
 import { LombokCodeActionProvider, lombokAction } from './codeActionProvider';
 import { LanguageServerMode } from './constants';
 import { getJavaExtension, isLombokSupportEnabled } from './util';
@@ -74,7 +74,7 @@ async function registerComponents(): Promise<void> {
     if (isRegistered) {
         return;
     }
-    disposables.push(commands.registerCommand(Commands.CODEACTION_LOMBOK, async (params: CodeActionParams, selectedAnnotations: string[]) => {
+    disposables.push(instrumentOperationAsVsCodeCommand(Commands.CODEACTION_LOMBOK, async (params: CodeActionParams, selectedAnnotations: string[]) => {
         lombokAction(params, selectedAnnotations);
     }));
     disposables.push(languages.registerCodeActionsProvider({ scheme: 'file', language: 'java' }, new LombokCodeActionProvider()));
