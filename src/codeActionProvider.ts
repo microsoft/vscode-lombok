@@ -6,6 +6,7 @@ import * as ProtocolConverter from "vscode-languageclient/lib/common/protocolCon
 import * as CodeConverter from "vscode-languageclient/lib/common/codeConverter";
 import { CodeActionParams, WorkspaceEdit } from 'vscode-languageclient';
 import { AnnotationResponse, LombokRequestParams } from './protocol';
+import { sendInfo } from "vscode-extension-telemetry-wrapper";
 
 const protoConverter: ProtocolConverter.Converter = ProtocolConverter.createConverter(undefined, undefined);
 const codeConverter: CodeConverter.Converter = CodeConverter.createConverter();
@@ -55,6 +56,9 @@ async function revealWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<void> 
 }
 
 export async function lombokAction(params: CodeActionParams, annotations: string[]): Promise<void> {
+    sendInfo("", {
+        operationName: "openLombokAction",
+    });
     const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
     if (!annotationResponse) {
         return;
@@ -116,6 +120,12 @@ export async function lombokAction(params: CodeActionParams, annotations: string
                 disposables.push(pickBox);
                 pickBox.show();
             });
+        } catch(err) {
+            // return when the quickpick is cancelled.
+            sendInfo("", {
+                operationName: "cancelLombokAction",
+            });
+            return;
         } finally {
             disposables.forEach(d => d.dispose());
         }
@@ -128,7 +138,37 @@ export async function lombokAction(params: CodeActionParams, annotations: string
         annotationsBefore: annotationResponse.annotations,
         annotationsAfter
     };
-    const workspaceEdit = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK, JSON.stringify(lombokParams)) as WorkspaceEdit;
+
+    const lombok: string[] = [];
+    const delombok: string[] = [];
+    for (const annotation of lombokParams.annotationsBefore) {
+        if (!lombokParams.annotationsAfter.includes(annotation)) {
+            delombok.push(annotation);
+        }
+    }
+    for (const annotation of lombokParams.annotationsAfter) {
+        if (!lombokParams.annotationsBefore.includes(annotation)) {
+            lombok.push(annotation);
+        }
+    }
+    if (!lombok.length && !delombok.length) {
+        sendInfo("", {
+            operationName: "cancelLombokAction",
+        });
+        return;
+    }
+    const startAt = Date.now();
+    let workspaceEdit;
+    try {
+        workspaceEdit = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK, JSON.stringify(lombokParams)) as WorkspaceEdit;
+    } finally {
+        sendInfo("", {
+            operationName: "applyLombokAction",
+            lombok: JSON.stringify(lombok),
+            delombok: JSON.stringify(delombok),
+            duration: Date.now() - startAt,
+        });
+    }
     await applyWorkspaceEdit(workspaceEdit);
     await revealWorkspaceEdit(workspaceEdit);
     // organize imports silently to fix missing annotation imports
