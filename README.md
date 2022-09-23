@@ -12,7 +12,7 @@ A lightweight extension based on [Language Support for Java by Red Hat](https://
 - Lombok - Refactor code with Lombok annotations.
 - Delombok - Remove annotations with actual methods.
 
-![Screenshot](images/vscode-lombok.gif)
+![Screenshot](https://raw.githubusercontent.com/microsoft/vscode-lombok/main/images/vscode-lombok.gif)
 
 ## Requirements
 - VS Code (version 1.65.0 or later)

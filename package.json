@@ -21,7 +21,7 @@
     "categories": [
         "Other"
     ],
-    "main": "./out/index",
+    "main": "./dist/extension",
     "activationEvents": [
         "onLanguage:java",
         "workspaceContains:pom.xml",
@@ -47,9 +47,10 @@
     },
     "scripts": {
         "clean": "node ./node_modules/rimraf/bin.js out/",
-        "compile": "npm run clean && tsc -p ./",
-        "test": "npm run compile && node ./out/test/runTest.js",
-        "watch": "tsc -watch -p ./",
+        "test": "npm run compile && node ./out/src/test/runTest.js",
+        "compile": "tsc -p . && webpack --config webpack.config.js",
+        "watch": "webpack --config webpack.config.js --watch",
+        "build": "webpack --config webpack.config.js --mode=\"production\"",
         "package": "vsce package",
         "vscode:prepublish": "npm run compile",
         "build-server": "node scripts/build/buildJdtlsExt.js"
@@ -67,7 +68,10 @@
         "@types/vscode": "^1.65.0",
         "glob": "^7.1.6",
         "mocha": "^9.2.2",
-        "rimraf": "^3.0.1"
+        "rimraf": "^3.0.1",
+        "ts-loader": "^9.3.1",
+        "webpack": "^5.74.0",
+        "webpack-cli": "^4.10.0"
     },
     "dependencies": {
         "vscode-extension-telemetry-wrapper": "^0.13.2",

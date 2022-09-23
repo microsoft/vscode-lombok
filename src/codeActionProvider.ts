@@ -1,6 +1,6 @@
 'use strict';
 
-import { commands, window, workspace, CodeActionProvider, CancellationToken, CodeAction, CodeActionContext, Command, ProviderResult, Range, Selection, TextDocument, TextEditorRevealType, CodeActionProviderMetadata, CodeActionKind, ThemeIcon, Uri, env, Disposable, QuickPickItem, QuickPickItemKind } from "vscode";
+import { commands, window, workspace, CodeActionProvider, CancellationToken, CodeAction, CodeActionContext, Command, ProviderResult, Range, Selection, TextDocument, TextEditorRevealType, CodeActionKind, ThemeIcon, Uri, env, Disposable, QuickPickItem, QuickPickItemKind } from "vscode";
 import { Commands, executeJavaLanguageServerCommand } from './commands';
 import * as ProtocolConverter from "vscode-languageclient/lib/common/protocolConverter";
 import * as CodeConverter from "vscode-languageclient/lib/common/codeConverter";
@@ -185,7 +185,7 @@ export class LombokCodeActionProvider implements CodeActionProvider {
         };
         const selectText = document.getText(range);
         let codeActionTitle = "Lombok...";
-        let selectedAnnotations = [];
+        let selectedAnnotations: string[] = [];
         if (selectText !== "") {
             selectedAnnotations = getSelectedAnnotations(selectText);
             if (selectedAnnotations.length === 1) {
