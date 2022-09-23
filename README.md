@@ -15,7 +15,7 @@ A lightweight extension based on [Language Support for Java by Red Hat](https://
 ![Screenshot](images/vscode-lombok.gif)
 
 ## Requirements
-- VS Code (version 1.21.0 or later)
+- VS Code (version 1.65.0 or later)
 - Lombok added as a dependency in your Java Project (Make sure you're using the latest version to avoid issues!) [Add with Maven](https://projectlombok.org/setup/maven) or  [Add with Gradle](https://projectlombok.org/setup/gradle)
 
 ## Install
@@ -29,6 +29,10 @@ Here are the supported annotations for lombok/delombok code actions.
 - [@EqualsAndHashCode](http://projectlombok.org/features/EqualsAndHashCode.html)
 - [@AllArgsConstructor and @NoArgsConstructor](http://projectlombok.org/features/Constructor.html)
 - [@Data](https://projectlombok.org/features/Data.html)
+
+## Data/Telemetry
+
+VS Code collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](http://go.microsoft.com/fwlink/?LinkId=521839) to learn more. If you don’t wish to send usage data to Microsoft, you can set the `telemetry.enableTelemetry` setting to `false`. Learn more in our [FAQ](https://code.visualstudio.com/docs/supporting/faq#_how-to-disable-telemetry-reporting).
 
 ## Credits
 This project was originally started by [@GabrielBB](https://github.com/GabrielBB) and is now currently maintained by Microsoft. Huge thanks to [@GabrielBB](https://github.com/GabrielBB) who started it all and made this Lombok extension available.

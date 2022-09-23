@@ -6,6 +6,7 @@ import * as ProtocolConverter from "vscode-languageclient/lib/common/protocolCon
 import * as CodeConverter from "vscode-languageclient/lib/common/codeConverter";
 import { CodeActionParams, WorkspaceEdit } from 'vscode-languageclient';
 import { AnnotationResponse, LombokRequestParams } from './protocol';
+import { sendInfo } from "vscode-extension-telemetry-wrapper";
 
 const protoConverter: ProtocolConverter.Converter = ProtocolConverter.createConverter(undefined, undefined);
 const codeConverter: CodeConverter.Converter = CodeConverter.createConverter();
@@ -123,6 +124,11 @@ export async function lombokAction(params: CodeActionParams, annotations: string
             return item.label.split('@')[1];
         });
     }
+    sendInfo("", { 
+        name: "lombokAnnotations", 
+        annotationsBefore: annotationResponse.annotations.join(","), 
+        annotationsAfter: annotationsAfter.join(",") 
+    });
     const lombokParams: LombokRequestParams = {
         context: params,
         annotationsBefore: annotationResponse.annotations,
