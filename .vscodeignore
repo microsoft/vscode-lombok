@@ -1,8 +1,8 @@
 .vscode/**
 .vscode-test/**
-out/test/**
-out/**/*.map
+out/**
 src/**
+dist/**/*.map
 .gitignore
 tsconfig.json
 tslint.json
@@ -13,3 +13,6 @@ scripts
 javaext/**
 .azure-pipelines/**
 javaConfig.json
+node_modules
+webpack.config.js
+.DS_Store

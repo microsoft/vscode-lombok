@@ -1,20 +1,27 @@
 {
 	"compilerOptions": {
-		"target": "es6",
-		"lib": [
-            "es6"
-        ],
 		"module": "commonjs",
-		"moduleResolution": "node",
+		"target": "es6",
 		"outDir": "out",
+		"lib": [
+			"es6"
+		],
 		"sourceMap": true,
-		"plugins": [{ "name": "typescript-tslint-plugin" }]
+		"rootDir": ".",
+		"noUnusedLocals": true,
+		"noImplicitThis": true,
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noUnusedParameters": true,
+		"strictNullChecks": true,
+		"alwaysStrict": true
 	},
 	"exclude": [
 		"node_modules",
 		"server",
 		".vscode-test",
 		"javaext",
-		"out"
+		"out",
+		"dist"
 	]
 }

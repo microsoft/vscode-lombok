@@ -14,7 +14,7 @@ export function getUserSettingsPath(platform: string): string {
     return map[platform];
 }
 
-export function isLombokSupportEnabled(): boolean {
+export function isLombokSupportEnabled(): boolean | undefined {
 	return vscode.workspace.getConfiguration().get("java.jdt.ls.lombokSupport.enabled");
 }
 
