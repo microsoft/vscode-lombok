@@ -40,8 +40,8 @@
           <resolver>p2</resolver>
           <target>
             <artifact>
-              <groupId>com.microsoft.java.maven</groupId>
-              <artifactId>com.microsoft.java.maven.tp</artifactId>
+              <groupId>com.microsoft.java</groupId>
+              <artifactId>com.microsoft.java.lombok.target</artifactId>
               <version>${project.version}</version>
             </artifact>
           </target>
