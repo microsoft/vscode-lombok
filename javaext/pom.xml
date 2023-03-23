@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.microsoft.java</groupId>
   <artifactId>parent</artifactId>
@@ -13,32 +15,16 @@
     <tycho.version>2.7.3</tycho.version>
     <tycho.extras.version>2.7.3</tycho.extras.version>
     <tycho.generateSourceReferences>false</tycho.generateSourceReferences>
-    <tycho.test.platformArgs/>
+    <tycho.test.platformArgs />
     <tycho.test.jvmArgs>-Xmx512m ${tycho.test.platformArgs}</tycho.test.jvmArgs>
   </properties>
 
   <modules>
     <module>com.microsoft.java.lombok</module>
+    <module>com.microsoft.java.lombok.target</module>
   </modules>
 
-  <repositories>
-    <repository>
-      <id>202209</id>
-      <layout>p2</layout>
-      <url>https://download.eclipse.org/releases/2022-09/202209141001/</url>
-    </repository>
-    <repository>
-      <id>jdt.ls</id>
-      <layout>p2</layout>
-      <url>http://download.eclipse.org/jdtls/snapshots/repository/latest/</url>
-    </repository>
-    <repository>
-      <id>lsp4j</id>
-      <layout>p2</layout>
-      <url>https://download.eclipse.org/lsp4j/updates/releases/0.12.0/</url>
-    </repository>
-    </repositories>
-    <build>
+  <build>
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
@@ -52,8 +38,33 @@
         <version>${tycho.version}</version>
         <configuration>
           <resolver>p2</resolver>
-          <pomDependencies>consider</pomDependencies>
-          <ignoreTychoRepositories>true</ignoreTychoRepositories>
+          <target>
+            <artifact>
+              <groupId>com.microsoft.java</groupId>
+              <artifactId>com.microsoft.java.lombok.target</artifactId>
+              <version>${project.version}</version>
+            </artifact>
+          </target>
+          <environments>
+            <environment>
+              <os>linux</os>
+              <ws>gtk</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>win32</os>
+              <ws>win32</ws>
+              <arch>x86_64</arch>
+            </environment>
+            <environment>
+              <os>macosx</os>
+              <ws>cocoa</ws>
+              <arch>x86_64</arch>
+            </environment>
+          </environments>
+          <dependency-resolution>
+            <!-- <optionalDependencies>ignore</optionalDependencies> -->
+          </dependency-resolution>
         </configuration>
       </plugin>
     </plugins>
@@ -87,6 +98,12 @@
             <!-- kill test JVM if tests take more than 1 minute (60 seconds) to finish -->
             <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.tycho</groupId>
+          <artifactId>tycho-maven-plugin</artifactId>
+          <version>${tycho-version}</version>
+          <extensions>true</extensions>
         </plugin>
       </plugins>
     </pluginManagement>
