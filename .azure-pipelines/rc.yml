@@ -34,7 +34,7 @@ extends:
       - stage: Build
         jobs:
           - job: Job_1
-            displayName: VSCode-Test-Runner-Nightly
+            displayName: VSCode-Lombok-Nightly
             templateContext:
               outputs:
                 - output: pipelineArtifact

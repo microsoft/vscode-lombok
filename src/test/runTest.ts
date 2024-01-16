@@ -25,7 +25,7 @@ async function main(): Promise<void> {
         // run the integration test
         await runTests({ vscodeExecutablePath, extensionDevelopmentPath, extensionTestsPath });
     } catch (err) {
-        console.error('Failed to run tests');
+        console.error(`Failed to run tests: ${err}`);
         process.exit(1);
     }
 }
