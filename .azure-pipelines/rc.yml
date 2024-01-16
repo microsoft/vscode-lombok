@@ -65,27 +65,27 @@ extends:
                 inputs:
                   ConnectedServiceName: vscjavaci_codesign
                   FolderPath: plugins
-                  Pattern: com.microsoft.java.lombok.*.jar
+                  Pattern: com.microsoft.java.lombok-*.jar
                   signConfigType: inlineSignParams
                   inlineOperation: |-
                     [
-                            {
-                                "KeyCode" : "CP-447347-Java",
-                                "OperationCode" : "JavaSign",
-                                "Parameters" : {
-                                    "SigAlg" : "SHA256withRSA",
-                                    "Timestamp" : "-tsa http://sha256timestamp.ws.digicert.com/sha256/timestamp"
-                                },
-                                "ToolName" : "sign",
-                                "ToolVersion" : "1.0"
-                            },
-                            {
-                                "KeyCode" : "CP-447347-Java",
-                                "OperationCode" : "JavaVerify",
-                                "Parameters" : {},
-                                "ToolName" : "sign",
-                                "ToolVersion" : "1.0"
-                            }
+                      {
+                        "KeyCode" : "CP-447347-Java",
+                        "OperationCode" : "JavaSign",
+                        "Parameters" : {
+                            "SigAlg" : "SHA256withRSA",
+                            "Timestamp" : "-tsa http://sha256timestamp.ws.digicert.com/sha256/timestamp"
+                        },
+                        "ToolName" : "sign",
+                        "ToolVersion" : "1.0"
+                      },
+                      {
+                        "KeyCode" : "CP-447347-Java",
+                        "OperationCode" : "JavaVerify",
+                        "Parameters" : {},
+                        "ToolName" : "sign",
+                        "ToolVersion" : "1.0"
+                      }
                     ]
               - bash: |
                   npx json@latest -I -f package.json -e "this.aiKey=\"$(AI_KEY)\""
