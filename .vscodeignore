@@ -16,3 +16,6 @@ javaConfig.json
 node_modules
 webpack.config.js
 .DS_Store
+
+# Ignore output of code sign
+plugins/*.md
