@@ -31,7 +31,7 @@ extends:
       - stage: Build
         jobs:
           - job: Job_1
-            displayName: VSCode-Test-Runner-CI
+            displayName: VSCode-Lombok-CI
             templateContext:
               outputs:
                 - output: pipelineArtifact
