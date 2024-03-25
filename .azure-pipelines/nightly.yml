@@ -63,7 +63,7 @@ extends:
               - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@2
                 displayName: ESRP CodeSigning
                 inputs:
-                  ConnectedServiceName: vscjavaci_codesign
+                  ConnectedServiceName: vscjavaci_esrp_codesign
                   FolderPath: plugins
                   Pattern: com.microsoft.java.lombok-*.jar
                   signConfigType: inlineSignParams
