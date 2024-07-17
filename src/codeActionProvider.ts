@@ -56,6 +56,10 @@ async function revealWorkspaceEdit(workspaceEdit: WorkspaceEdit): Promise<void> 
 }
 
 export async function lombokAction(params: CodeActionParams, annotations: string[]): Promise<void> {
+    // TODO: remove the diagnostics here because the server side will throw:
+    // java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING path $.context.diagnostics[0].code
+    // when parsing the params from json string to object. What we need is only the range and textDocument.
+    params.context.diagnostics = [];
     const annotationResponse = await executeJavaLanguageServerCommand(Commands.JAVA_CODEACTION_LOMBOK_ANNOTATIONS, JSON.stringify(params)) as AnnotationResponse;
     if (!annotationResponse) {
         return;
