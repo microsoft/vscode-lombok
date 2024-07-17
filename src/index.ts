@@ -13,7 +13,7 @@ let isRegistered: boolean = false;
 let disposables: Disposable[] = [];
 
 export async function activate(context: ExtensionContext): Promise<void> {
-    await initializeFromJsonFile(context.asAbsolutePath('./package.json'), { firstParty: true });
+    await initializeFromJsonFile(context.asAbsolutePath('./package.json'));
     await instrumentOperation('activation', doActivate)(context);
 }
 

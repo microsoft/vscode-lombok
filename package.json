@@ -74,7 +74,7 @@
         "webpack-cli": "^4.10.0"
     },
     "dependencies": {
-        "vscode-extension-telemetry-wrapper": "^0.13.2",
+        "vscode-extension-telemetry-wrapper": "^0.14.0",
         "vscode-languageclient": "7.1.0-next.5"
     }
 }
