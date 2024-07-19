@@ -4,6 +4,11 @@ All notable changes to the "vscode-lombok" extension will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.1.1
+### Fixed
+- Lombok dropdown list cannot appear when the triggered line has diagnostic information. See [PR#116](https://github.com/microsoft/vscode-lombok/pull/116)
+- Replace badge URL to vsmarketplacebadges.dev. See [PR#118](https://github.com/microsoft/vscode-lombok/pull/118)
+
 ## 1.1.0 - 2022-09-26
 ### Added
 - Support Lombok and Delombok Code Actions. See [#90](https://github.com/microsoft/vscode-lombok/pull/90).

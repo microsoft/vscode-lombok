@@ -2,7 +2,7 @@
     "name": "vscode-lombok",
     "displayName": "Lombok Annotations Support for VS Code",
     "description": "Refactor code with Lombok annotations, or remove Lombok annotations with actual methods.",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "publisher": "vscjava",
     "icon": "images/icon.png",
     "license": "MIT",
