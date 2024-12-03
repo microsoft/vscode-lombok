@@ -19,3 +19,4 @@ webpack.config.js
 
 # Ignore output of code sign
 plugins/*.md
+**/*.log
