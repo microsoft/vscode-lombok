@@ -41,6 +41,10 @@ extends:
             steps:
               - checkout: self
                 fetchTags: false
+              - task: NodeTool@0
+                displayName: 'Use Node 20.x'
+                inputs:
+                  versionSpec: 20.x
               - task: JavaToolInstaller@0
                 displayName: 'Use Java 21'
                 inputs:
@@ -57,7 +61,7 @@ extends:
                   command: custom
                   verbose: false
                   customCommand: 'run build-server'
-              - script: 'npx vsce@latest package'
+              - script: 'npx @vscode/vsce@latest package'
                 displayName: 'package vsix'
               - task: CopyFiles@2
                 displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
